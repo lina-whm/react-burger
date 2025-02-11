@@ -1,3 +1,5 @@
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+
 declare module '*.svg' {
 	import React = require('react');
 	export const ReactComponent: React.FunctionComponent<
@@ -33,3 +35,5 @@ declare module '*.module.sass' {
 	const classes: { [key: string]: string };
 	export default classes;
 }
+
+/* eslint-enable  @typescript-eslint/no-explicit-any */

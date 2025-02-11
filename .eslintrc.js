@@ -1,13 +1,22 @@
 module.exports = {
+	plugins: ['import'],
 	parser: '@typescript-eslint/parser',
 	parserOptions: {
 		ecmaVersion: 2020,
 		sourceType: 'module',
-		warnOnUnsupportedTypeScriptVersion: false,
 	},
 	settings: {
 		react: {
 			version: 'detect',
+		},
+		'import/parsers': {
+			'@typescript-eslint/parser': ['.ts', '.tsx',],
+		},
+		'import/resolver': {
+			typescript: {
+				alwaysTryTypes: true,
+				project: "./tsconfig.json",
+			},
 		},
 	},
 	extends: [

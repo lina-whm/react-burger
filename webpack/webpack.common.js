@@ -67,6 +67,7 @@ module.exports = {
 						loader: 'sass-loader',
 						options: {
 							sourceMap: true,
+							api: "modern"
 						},
 					},
 				],

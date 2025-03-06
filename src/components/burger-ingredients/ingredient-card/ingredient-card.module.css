@@ -1,0 +1,15 @@
+.card {
+  position: relative;
+  text-align: center;
+}
+
+.image {
+  width: 100%;
+}
+
+.price {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+}

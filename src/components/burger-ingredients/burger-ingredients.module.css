@@ -1,0 +1,37 @@
+.ingredients {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.tabs {
+  display: flex;
+  justify-content: space-between;
+}
+
+.ingredientsList {
+  max-height: 70vh; /* Ограничение высоты для скролла */
+  overflow-y: auto; /* Включаем скролл */
+  scroll-behavior: smooth; /* Плавный скролл */
+}
+
+.ingredientsSection {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+/* Кастомизация скроллбара */
+.ingredientsList::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ingredientsList::-webkit-scrollbar-track {
+  background: #2f2f37;
+}
+
+.ingredientsList::-webkit-scrollbar-thumb {
+  background: #8585ad;
+  border: 3px solid #2f2f37;
+  border-radius: 6px;
+}

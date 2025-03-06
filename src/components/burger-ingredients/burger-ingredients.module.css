@@ -9,9 +9,9 @@
 }
 
 .ingredientsList {
-  max-height: 70vh; /* Ограничение высоты для скролла */
-  overflow-y: auto; /* Включаем скролл */
-  scroll-behavior: smooth; /* Плавный скролл */
+  max-height: 70vh; 
+  overflow-y: auto; 
+  scroll-behavior: smooth; 
 }
 
 .ingredientsSection {
@@ -21,7 +21,6 @@
   margin-bottom: 40px;
 }
 
-/* Кастомизация скроллбара */
 .ingredientsList::-webkit-scrollbar {
   width: 8px;
 }

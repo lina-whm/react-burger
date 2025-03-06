@@ -4,10 +4,10 @@
 }
 
 .ingredientsList {
-  max-height: 464px; /* Ограничение высоты для скролла */
-  overflow-y: auto; /* Включаем скролл */
-  scroll-behavior: smooth; /* Плавный скролл */
-  list-style: none; /* Убираем маркеры списка */
+  max-height: 464px;
+  overflow-y: auto;
+  scroll-behavior: smooth; 
+  list-style: none; 
   padding: 0;
   margin: 0;
 }
@@ -28,7 +28,6 @@
   margin-right: 40px;
 }
 
-/* Кастомизация скроллбара */
 .ingredientsList::-webkit-scrollbar {
   width: 8px;
 }

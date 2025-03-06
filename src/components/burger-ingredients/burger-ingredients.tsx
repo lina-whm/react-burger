@@ -18,7 +18,7 @@ const BurgerIngredients = () => {
 		<section className={styles.ingredients}>
 			<h1 className='text text_type_main-large mt-10 mb-5'>Соберите бургер</h1>
 
-			{/* Табы */}
+			{}
 			<div className={styles.tabs}>
 				<Tab
 					value='bun'

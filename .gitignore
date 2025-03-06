@@ -21,3 +21,19 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Дополнения для проекта
+# ----------------------
+# IDE 
+.vscode/
+.idea/
+
+# Логи
+*.log.*
+logs/
+
+# Автогенерируемые файлы
+src/react-app-env.d.ts
+
+# Временные файлы ОС
+Thumbs.db

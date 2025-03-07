@@ -6,31 +6,33 @@
 .tabs {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 40px;
 }
 
 .ingredientsList {
   max-height: 70vh; 
   overflow-y: auto; 
-  scroll-behavior: smooth; 
+  scroll-behavior: smooth;
 }
 
 .ingredientsSection {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-  margin-bottom: 40px;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 24px; 
+  margin-bottom: 40px; 
 }
 
+
 .ingredientsList::-webkit-scrollbar {
-  width: 8px;
+  width: 8px; 
 }
 
 .ingredientsList::-webkit-scrollbar-track {
-  background: #2f2f37;
+  background: #2f2f37; 
 }
 
 .ingredientsList::-webkit-scrollbar-thumb {
-  background: #8585ad;
-  border: 3px solid #2f2f37;
+  background: #8585ad; 
+  border: 3px solid #2f2f37; 
   border-radius: 6px;
 }

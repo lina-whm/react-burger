@@ -1,74 +1,116 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
 	ConstructorElement,
 	Button,
 	CurrencyIcon,
 } from '@ya.praktikum/react-developer-burger-ui-components'
+import classNames from 'classnames' 
+import Modal from '../modal/modal'
+import OrderDetails from '../order-details/order-details'
 import styles from './burger-constructor.module.css'
 
-const BurgerConstructor = () => {
+interface Ingredient {
+	_id: string
+	name: string
+	type: string
+	price: number
+	image: string
+}
+
+interface BurgerConstructorProps {
+	selectedIngredients: Ingredient[]
+}
+
+const BurgerConstructor: React.FC<BurgerConstructorProps> = ({
+	selectedIngredients,
+}) => {
+	const [isOrderModalOpen, setIsOrderModalOpen] = useState(false)
+
+	const buns = selectedIngredients.filter(
+		ingredient => ingredient.type === 'bun'
+	)
+	const otherIngredients = selectedIngredients.filter(
+		ingredient => ingredient.type !== 'bun'
+	)
+
+	const totalPrice = selectedIngredients.reduce(
+		(sum, ingredient) => sum + ingredient.price,
+		0
+	)
+
+	const handleOrderClick = () => {
+		setIsOrderModalOpen(true)
+	}
+
+	const closeModal = () => {
+		setIsOrderModalOpen(false)
+	}
+
 	return (
-		<section className={`${styles.constructor} pt-25`}>
+		<section className={classNames(styles.constructor)}>
 			{/* Верхняя булка */}
-			<ConstructorElement
-				type='top'
-				isLocked={true}
-				text='Краторная булка N-200i (верх)'
-				price={200}
-				thumbnail='https://code.s3.yandex.net/react/code/bun-02.png'
-			/>
+			{buns.length > 0 && (
+				<div className={classNames(styles.bun, styles.bunTop)}>
+					<ConstructorElement
+						type='top'
+						isLocked={true}
+						text={`${buns[0].name} (верх)`}
+						price={buns[0].price}
+						thumbnail={buns[0].image}
+					/>
+				</div>
+			)}
 
 			{/* Список ингредиентов */}
-			<ul className={styles.ingredientsList}>
-				<li className={styles.ingredientItem}>
-					<ConstructorElement
-						text='Соус традиционный галактический'
-						price={30}
-						thumbnail='https://code.s3.yandex.net/react/code/sauce-03.png'
-					/>
-				</li>
-				<li className={styles.ingredientItem}>
-					<ConstructorElement
-						text='Мясо бессмертных моллюсков Protostomia'
-						price={300}
-						thumbnail='https://code.s3.yandex.net/react/code/meat-02.png'
-					/>
-				</li>
-				<li className={styles.ingredientItem}>
-					<ConstructorElement
-						text='Плоды Фалленманского дерева'
-						price={80}
-						thumbnail='https://code.s3.yandex.net/react/code/mineral_rings.png'
-					/>
-				</li>
-				<li className={styles.ingredientItem}>
-					<ConstructorElement
-						text='Хрустящие минеральные кольца'
-						price={80}
-						thumbnail='https://code.s3.yandex.net/react/code/mineral_rings.png'
-					/>
-				</li>
-			</ul>
+			<div className={classNames(styles.ingredientsList)}>
+				{otherIngredients.map((ingredient, index) => (
+					<div key={index} className={classNames(styles.ingredientItem)}>
+						<ConstructorElement
+							text={ingredient.name}
+							price={ingredient.price}
+							thumbnail={ingredient.image}
+						/>
+					</div>
+				))}
+			</div>
 
 			{/* Нижняя булка */}
-			<ConstructorElement
-				type='bottom'
-				isLocked={true}
-				text='Краторная булка N-200i (низ)'
-				price={200}
-				thumbnail='https://code.s3.yandex.net/react/code/bun-02.png'
-			/>
+			{buns.length > 0 && (
+				<div className={classNames(styles.bun)}>
+					<ConstructorElement
+						type='bottom'
+						isLocked={true}
+						text={`${buns[0].name} (низ)`}
+						price={buns[0].price}
+						thumbnail={buns[0].image}
+					/>
+				</div>
+			)}
 
-			{/* Общая стоимость и кнопка */}
-			<div className={`${styles.total} mt-10`}>
-				<div className={styles.price}>
-					<span className='text text_type_digits-medium mr-2'>510</span>
+			{/* Итоговая стоимость и кнопка */}
+			<div className={classNames(styles.total)}>
+				<div className={classNames(styles.totalPrice)}>
+					<span className={classNames('text', 'text_type_digits-medium')}>
+						{totalPrice}
+					</span>
 					<CurrencyIcon type='primary' />
 				</div>
-				<Button htmlType='button' type='primary' size='large'>
+				<Button
+					type='primary'
+					size='large'
+					htmlType='button'
+					onClick={handleOrderClick}
+				>
 					Оформить заказ
 				</Button>
 			</div>
+
+			{/* Модальное окно с деталями заказа */}
+			{isOrderModalOpen && (
+				<Modal onClose={closeModal}>
+					<OrderDetails />
+				</Modal>
+			)}
 		</section>
 	)
 }

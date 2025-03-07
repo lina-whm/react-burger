@@ -1,6 +1,7 @@
 .card {
   position: relative;
   text-align: center;
+  cursor: pointer;
 }
 
 .image {

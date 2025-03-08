@@ -6,6 +6,7 @@ import {
 	ProfileIcon,
 } from '@ya.praktikum/react-developer-burger-ui-components'
 import styles from './app-header.module.css'
+import classNames from 'classnames'
 
 const AppHeader = () => {
 	return (

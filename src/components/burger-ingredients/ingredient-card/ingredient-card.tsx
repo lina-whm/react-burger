@@ -14,6 +14,7 @@ const IngredientCard: React.FC<IngredientCardProps> = ({
 }) => {
 	return (
 		<div className={styles.card} onClick={onIngredientClick}>
+			{ingredient.type === 'bun' && <div className={styles.count}>2</div>}
 			<img
 				src={ingredient.image}
 				alt={ingredient.name}

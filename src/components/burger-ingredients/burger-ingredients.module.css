@@ -1,28 +1,43 @@
 .ingredients {
   max-width: 600px;
-  margin: 0 auto;
+  height: calc(100vh - 284px); /* Фиксированная высота для всего блока */
+  display: flex;
+  flex-direction: column;
 }
 
-.ingredientsList {
+.tabs {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.scrollContainer {
+  flex: 1;
+  overflow-y: auto; /* Только один скролл */
+  padding-right: 8px; /* Отступ для скроллбара */
+}
+
+.category {
+  margin-bottom: 40px;
+}
+
+.items {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 24px;
 }
 
-.card {
-  text-align: center;
-  cursor: pointer;
+/* Стилизация скроллбара */
+.scrollContainer::-webkit-scrollbar {
+  width: 8px;
 }
 
-.image {
-  width: 240px;
-  height: 120px;
-  object-fit: cover;
+.scrollContainer::-webkit-scrollbar-track {
+  background: #2f2f37;
 }
 
-.price {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 8px;
+.scrollContainer::-webkit-scrollbar-thumb {
+  background-color: #8585ad;
+  border-radius: 6px;
+  border: 3px solid #2f2f37;
 }

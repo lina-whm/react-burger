@@ -2,30 +2,47 @@
   position: relative;
   text-align: center;
   cursor: pointer;
-  border-radius: 8px;
-  padding: 16px;
-  transition: transform 0.2s ease-in-out;
+  padding: 16px; /* Добавили внутренние отступы */
+  min-height: 200px; /* Минимальная высота карточки */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.card:hover {
-  transform: scale(1.05);
+.count {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #4c4cff;
+  color: white;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+   z-index: 1;
 }
 
-.image {
-  width: 240px;
-  height: 120px;
-  object-fit: cover;
-}
 
 .price {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 8px;
+  gap: 8px; /* Отступ между ценой и иконкой */
+  font-size: 20px; /* Увеличили размер цены */
+  margin: 8px 0;
 }
 
 .name {
-  margin-top: 8px;
   font-size: 16px;
-  color: #f2f2f3;
+  line-height: 1.2;
+  margin: 0;
+  padding: 0 8px; /* Защитные отступы */
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Максимум 2 строки */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

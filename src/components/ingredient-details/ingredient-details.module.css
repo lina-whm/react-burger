@@ -1,0 +1,25 @@
+.details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.image {
+  width: 240px;
+  height: 120px;
+  object-fit: cover;
+}
+
+.nutrition {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.nutritionItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}

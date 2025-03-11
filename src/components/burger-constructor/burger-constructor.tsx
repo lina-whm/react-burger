@@ -1,71 +1,64 @@
-import React, { useMemo } from 'react'
-import { useSelector } from 'react-redux'
+import React, { useCallback, useMemo, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useDrop } from 'react-dnd'
 import {
 	ConstructorElement,
-	Button,
 	CurrencyIcon,
+	Button,
 } from '@ya.praktikum/react-developer-burger-ui-components'
-import { useDrop } from 'react-dnd'
-import classNames from 'classnames'
+import { selectBunAndIngredients } from '../../services/selectors/constructorSelectors'
 import {
 	addIngredient,
+	removeIngredient,
 	moveIngredient,
 } from '../../services/slices/constructorSlice'
-import { createOrder } from '../../services/slices/orderSlice'
+import DraggableIngredient from './draggable-ingredient'
 import styles from './burger-constructor.module.css'
-import { Ingredient, RootState } from '../../components/utils/types'
-import { useAppDispatch } from '../../services/hooks/useAppDispatch'
-import DraggableIngredient from 'components/burger-constructor/draggable-ingredient'
+import { ConstructorIngredient } from '../../components/utils/types'
 
-const BurgerConstructor = () => {
-	const dispatch = useAppDispatch()
-	const { bun, ingredients } = useSelector(
-		(state: RootState) => state.constructor
-	)
-	const { status } = useSelector((state: RootState) => state.order) 
+interface BurgerConstructorProps {
+	onOrderClick: () => void
+}
 
-	
+const BurgerConstructor: React.FC<BurgerConstructorProps> = ({
+	onOrderClick,
+}) => {
+	const dispatch = useDispatch()
+	const { bun, ingredients = [] } = useSelector(selectBunAndIngredients)
+	const dropRef = useRef<HTMLDivElement>(null)
+
 	const [, drop] = useDrop({
-		accept: 'INGREDIENT',
-		drop: (item: Ingredient) => {
+		accept: 'ingredient',
+		drop(item: ConstructorIngredient) {
 			dispatch(addIngredient(item))
 		},
 	})
 
-	
-	const moveCard = (dragIndex: number, hoverIndex: number) => {
-		dispatch(moveIngredient({ dragIndex, hoverIndex }))
-	}
+	drop(dropRef)
 
-	
-	const totalPrice = useMemo(() => {
-		const ingredientsPrice = ingredients.reduce(
-			(sum, ingredient) => sum + ingredient.price,
+	const total = useMemo(() => {
+		const ingredientsSum = ingredients.reduce(
+			(sum, item) => sum + item.price,
 			0
 		)
-		const bunPrice = bun ? bun.price * 2 : 0
-		return ingredientsPrice + bunPrice
-	}, [ingredients, bun])
+		const bunSum = bun ? bun.price * 2 : 0
+		return ingredientsSum + bunSum
+	}, [bun, ingredients])
 
-	
-	const handleOrderClick = () => {
-		const ingredientIds = [
-			bun?._id,
-			...ingredients.map(ingredient => ingredient._id),
-			bun?._id,
-		].filter(Boolean) as string[]
-
-		dispatch(createOrder(ingredientIds))
-	}
+	const moveCard = useCallback(
+		(dragIndex: number, hoverIndex: number) => {
+			dispatch(moveIngredient({ dragIndex, hoverIndex }))
+		},
+		[dispatch]
+	)
 
 	return (
-		<section ref={drop} className={classNames(styles.constructor)}>
-			{/* Верхняя булка */}
+		<div ref={dropRef} className={`${styles.constructor} pt-25 pl-4`}>
 			{bun && (
-				<div className={classNames(styles.bun)}>
+				<div className='ml-8 mb-4'>
 					<ConstructorElement
 						type='top'
-						isLocked={true}
+						isLocked
 						text={`${bun.name} (верх)`}
 						price={bun.price}
 						thumbnail={bun.image}
@@ -73,24 +66,23 @@ const BurgerConstructor = () => {
 				</div>
 			)}
 
-			{/* Список ингредиентов */}
-			<div className={classNames(styles.ingredientsList)}>
+			<div className={`${styles.scroll} custom-scroll`}>
 				{ingredients.map((ingredient, index) => (
 					<DraggableIngredient
-						key={ingredient._id}
+						key={ingredient.uuid}
 						ingredient={ingredient}
 						index={index}
 						moveCard={moveCard}
+						onRemove={() => dispatch(removeIngredient(ingredient.uuid))}
 					/>
 				))}
 			</div>
 
-			{/* Нижняя булка */}
 			{bun && (
-				<div className={classNames(styles.bun)}>
+				<div className='ml-8 mt-4'>
 					<ConstructorElement
 						type='bottom'
-						isLocked={true}
+						isLocked
 						text={`${bun.name} (низ)`}
 						price={bun.price}
 						thumbnail={bun.image}
@@ -98,25 +90,20 @@ const BurgerConstructor = () => {
 				</div>
 			)}
 
-			{/* Итоговая стоимость и кнопка */}
-			<div className={classNames(styles.total)}>
-				<div className={classNames(styles.totalPrice)}>
-					<span className={classNames('text', 'text_type_digits-medium')}>
-						{totalPrice}
-					</span>
-					<CurrencyIcon type='primary' />
-				</div>
+			<div className={`${styles.total} mt-10`}>
+				<span className='text text_type_digits-medium mr-2'>{total}</span>
+				<CurrencyIcon type='primary' />
 				<Button
+					htmlType='button'
 					type='primary'
 					size='large'
-					htmlType='button'
-					onClick={handleOrderClick}
-					disabled={!bun || ingredients.length === 0 || status === 'loading'}
+					onClick={onOrderClick}
+					disabled={!bun || ingredients.length === 0}
 				>
-					{status === 'loading' ? 'Оформляем заказ...' : 'Оформить заказ'}
+					Оформить заказ
 				</Button>
 			</div>
-		</section>
+		</div>
 	)
 }
 

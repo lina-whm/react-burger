@@ -1,5 +1,4 @@
-import { API_BASE } from '@utils/api'
-
+import { API_BASE } from '../../components/utils/api'
 
 export const createOrder = async (ingredientIds: string[]) => {
 	const response = await fetch(`${API_BASE}/orders`, {
@@ -13,4 +12,4 @@ export const createOrder = async (ingredientIds: string[]) => {
 	return data.order.number
 }
 
-export {} 
+export {}

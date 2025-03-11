@@ -3,36 +3,26 @@
   margin: 0 auto;
 }
 
-.tabs {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 40px;
-}
-
 .ingredientsList {
-  max-height: 70vh; 
-  overflow-y: auto; 
-  scroll-behavior: smooth;
-}
-
-.ingredientsSection {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); 
-  gap: 24px; 
-  margin-bottom: 40px; 
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
 }
 
-
-.ingredientsList::-webkit-scrollbar {
-  width: 8px; 
+.card {
+  text-align: center;
+  cursor: pointer;
 }
 
-.ingredientsList::-webkit-scrollbar-track {
-  background: #2f2f37; 
+.image {
+  width: 240px;
+  height: 120px;
+  object-fit: cover;
 }
 
-.ingredientsList::-webkit-scrollbar-thumb {
-  background: #8585ad; 
-  border: 3px solid #2f2f37; 
-  border-radius: 6px;
+.price {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
 }

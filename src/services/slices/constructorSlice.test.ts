@@ -9,7 +9,7 @@ export interface ConstructorState {
 
 export const initialState: ConstructorState = {
 	bun: null,
-	ingredients: [], // Инициализация пустым массивом
+	ingredients: [],
 }
 
 const constructorSlice = createSlice({
@@ -21,10 +21,6 @@ const constructorSlice = createSlice({
 				if (action.payload.type === 'bun') {
 					state.bun = action.payload
 				} else {
-					// Убедитесь, что state.ingredients инициализирован
-					if (!state.ingredients) {
-						state.ingredients = []
-					}
 					state.ingredients.push(action.payload)
 				}
 			},
@@ -53,7 +49,7 @@ const constructorSlice = createSlice({
 		},
 		clearConstructor: state => {
 			state.bun = null
-			state.ingredients = [] // Сброс до пустого массива
+			state.ingredients = []
 		},
 	},
 })

@@ -14,10 +14,13 @@
 		"isolatedModules": true,
 		"noEmit": true,
 		"jsx": "react-jsx",
-		"baseUrl": "src",
+		"baseUrl": "./src",
 		"paths": {
-			"@utils/*": ["components/utils/*"]
-		}
+			"@utils/*": ["components/utils/*"],
+			"@services/*": ["services/*"],
+			"@components/*": ["components/*"]
+		},
+		"typeRoots": ["./node_modules/@types", "./src/types"]
 	},
 	"include": ["src"],
 	"exclude": ["node_modules"]

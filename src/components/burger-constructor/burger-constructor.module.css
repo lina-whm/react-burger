@@ -1,50 +1,19 @@
 .constructor {
   display: flex;
   flex-direction: column;
-  align-items: center; 
-  gap: 16px; 
-  max-width: 600px;
-  margin: 0 auto;
+  min-width: 600px;
 }
 
-.bun {
-  border-radius: 8px; 
-  padding: 8px; 
-  width: 100%; 
-}
-
-.bunTop {
-  margin-top: 100px; 
-}
-
-.ingredientsList {
+.scroll {
+  max-height: 464px;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 16px; 
-  max-height: 464px; 
-  overflow-y: auto; 
-  width: 100%; 
-  padding-right: 8px; 
-}
-
-.ingredientItem {
-  display: flex;
-  align-items: center;
-  gap: 8px; 
-  border-radius: 8px; 
-  padding: 8px; 
+  gap: 16px;
 }
 
 .total {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 40px; 
-  margin-top: 40px; 
-}
-
-.totalPrice {
-  display: flex;
-  align-items: center;
-  gap: 8px; 
 }

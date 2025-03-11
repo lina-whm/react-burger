@@ -1,16 +1,16 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { API_BASE } from '@utils/api'
-import { Ingredient } from '@utils/types'
+import { API_BASE } from '../../components/utils/api'
+import { Ingredient } from '../../components/utils/types'
 
 interface IngredientsState {
 	items: Ingredient[]
-	status: 'idle' | 'loading' | 'succeeded' | 'failed'
+	loading: boolean
 	error: string | null
 }
 
 const initialState: IngredientsState = {
 	items: [],
-	status: 'idle',
+	loading: false,
 	error: null,
 }
 
@@ -19,7 +19,7 @@ export const fetchIngredients = createAsyncThunk(
 	async () => {
 		const response = await fetch(`${API_BASE}/ingredients`)
 		const data = await response.json()
-		return data.data
+		return data.data as Ingredient[]
 	}
 )
 
@@ -30,15 +30,16 @@ const ingredientsSlice = createSlice({
 	extraReducers: builder => {
 		builder
 			.addCase(fetchIngredients.pending, state => {
-				state.status = 'loading'
+				state.loading = true
+				state.error = null
 			})
 			.addCase(fetchIngredients.fulfilled, (state, action) => {
-				state.status = 'succeeded'
+				state.loading = false
 				state.items = action.payload
 			})
 			.addCase(fetchIngredients.rejected, (state, action) => {
-				state.status = 'failed'
-				state.error = action.error.message || 'Ошибка загрузки ингредиентов'
+				state.loading = false
+				state.error = action.error.message || 'Ошибка загрузки'
 			})
 	},
 })

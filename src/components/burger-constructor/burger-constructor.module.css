@@ -1,19 +1,52 @@
 .constructor {
   display: flex;
   flex-direction: column;
-  min-width: 600px;
+  align-items: center;
+  gap: 16px;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-.scroll {
-  max-height: 464px;
-  overflow-y: auto;
+.bun {
+  background: #1c1c21;
+  border-radius: 8px;
+  padding: 8px;
+  width: 100%;
+}
+
+.bunTop {
+  margin-top: 100px;
+}
+
+.ingredientsList {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  max-height: 464px;
+  overflow-y: auto;
+  width: 100%;
+  padding-right: 8px;
+}
+
+.draggableItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1c1c21;
+  border-radius: 8px;
+  padding: 8px;
 }
 
 .total {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 40px;
+  margin-top: 40px;
+}
+
+.totalPrice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }

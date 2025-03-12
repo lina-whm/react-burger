@@ -1,8 +1,16 @@
 import { configureStore } from '@reduxjs/toolkit'
-import rootReducer from './reducers'
+import constructorReducer from '../slices/constructorSlice'
+import ingredientsReducer from '../slices/ingredientsSlice'
+import orderReducer from '../slices/orderSlice'
+import ingredientDetailsReducer from '../slices/ingredientDetailsSlice'
 
 export const store = configureStore({
-	reducer: rootReducer,
+	reducer: {
+		constructor: constructorReducer,
+		ingredients: ingredientsReducer,
+		order: orderReducer,
+		ingredientDetails: ingredientDetailsReducer,
+	},
 	middleware: getDefaultMiddleware =>
 		getDefaultMiddleware({
 			serializableCheck: false,

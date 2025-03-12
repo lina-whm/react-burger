@@ -11,25 +11,12 @@ export interface Ingredient {
 }
 
 export interface ConstructorIngredient extends Ingredient {
-	uuid: string // Уникальный идентификатор для ингредиента в конструкторе
+	uuid: string
 }
 
 export interface RootState {
-	ingredients: {
-		items: Ingredient[]
-		loading: boolean
-		error: string | null
-	}
 	constructor: {
-		bun: ConstructorIngredient | null // Используем ConstructorIngredient
-		ingredients: ConstructorIngredient[] // Используем ConstructorIngredient
-	}
-	order: {
-		orderNumber: number | null
-		loading: boolean
-		error: string | null
-	}
-	ingredientDetails: {
-		ingredient: Ingredient | null
+		bun: ConstructorIngredient | null
+		ingredients: ConstructorIngredient[]
 	}
 }

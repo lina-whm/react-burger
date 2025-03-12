@@ -2,8 +2,8 @@
   position: relative;
   text-align: center;
   cursor: pointer;
-  padding: 16px; /* Добавили внутренние отступы */
-  min-height: 200px; /* Минимальная высота карточки */
+  padding: 16px; 
+  min-height: 200px; 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -30,8 +30,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px; /* Отступ между ценой и иконкой */
-  font-size: 20px; /* Увеличили размер цены */
+  gap: 8px; 
+  font-size: 20px; 
   margin: 8px 0;
 }
 
@@ -39,9 +39,9 @@
   font-size: 16px;
   line-height: 1.2;
   margin: 0;
-  padding: 0 8px; /* Защитные отступы */
+  padding: 0 8px; 
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* Максимум 2 строки */
+  -webkit-line-clamp: 2; 
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -1,6 +1,6 @@
 .ingredients {
   max-width: 600px;
-  height: calc(100vh - 284px); /* Фиксированная высота для всего блока */
+  height: calc(100vh - 284px);
   display: flex;
   flex-direction: column;
 }
@@ -13,8 +13,8 @@
 
 .scrollContainer {
   flex: 1;
-  overflow-y: auto; /* Только один скролл */
-  padding-right: 8px; /* Отступ для скроллбара */
+  overflow-y: auto; 
+  padding-right: 8px; 
 }
 
 .category {
@@ -27,7 +27,7 @@
   gap: 24px;
 }
 
-/* Стилизация скроллбара */
+
 .scrollContainer::-webkit-scrollbar {
   width: 8px;
 }

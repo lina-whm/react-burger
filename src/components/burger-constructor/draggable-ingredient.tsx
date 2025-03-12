@@ -4,7 +4,8 @@ import {
 	ConstructorElement,
 	DragIcon,
 } from '@ya.praktikum/react-developer-burger-ui-components'
-import { ConstructorIngredient } from '../../components/utils/types'
+import { ConstructorIngredient } from './../utils/types'
+import styles from './draggable-ingredient.module.css'
 
 interface DraggableIngredientProps {
 	ingredient: ConstructorIngredient
@@ -31,14 +32,11 @@ const DraggableIngredient: React.FC<DraggableIngredientProps> = ({
 
 	const [, drop] = useDrop({
 		accept: 'ingredient',
-		hover(item: { index: number }, monitor) {
+		hover(item: { index: number }) {
 			if (!ref.current) return
-
 			const dragIndex = item.index
 			const hoverIndex = index
-
 			if (dragIndex === hoverIndex) return
-
 			moveCard(dragIndex, hoverIndex)
 			item.index = hoverIndex
 		},
@@ -47,7 +45,12 @@ const DraggableIngredient: React.FC<DraggableIngredientProps> = ({
 	drag(drop(ref))
 
 	return (
-		<div ref={ref} style={{ opacity: isDragging ? 0.5 : 1 }}>
+		<div
+			ref={ref}
+			style={{ opacity: isDragging ? 0.5 : 1 }}
+			className={styles.draggableItem}
+		>
+			<DragIcon type='primary' />
 			<ConstructorElement
 				text={ingredient.name}
 				price={ingredient.price}

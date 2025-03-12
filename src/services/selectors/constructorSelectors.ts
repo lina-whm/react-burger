@@ -7,6 +7,6 @@ export const selectBunAndIngredients = createSelector(
 	[selectConstructor],
 	constructor => ({
 		bun: constructor.bun,
-		ingredients: constructor.ingredients || [], // Защита от undefined
+		ingredients: constructor.ingredients || [], 
 	})
 )

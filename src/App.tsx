@@ -21,13 +21,14 @@ function App() {
 		setIsIngredientModalOpen(true)
 	}
 
+	//
+	// const handleOpenOrderModal = () => {
+	//   setIsOrderModalOpen(true);
+	// };
+
 	const handleCloseIngredientModal = () => {
 		setIsIngredientModalOpen(false)
 		setSelectedIngredient(null)
-	}
-
-	const handleOpenOrderModal = () => {
-		setIsOrderModalOpen(true)
 	}
 
 	const handleCloseOrderModal = () => {
@@ -40,7 +41,7 @@ function App() {
 				<AppHeader />
 				<main className={styles.main}>
 					<BurgerIngredients onIngredientClick={handleOpenIngredientModal} />
-					<BurgerConstructor onOrderClick={handleOpenOrderModal} />
+					<BurgerConstructor /> {/* убрала onOrderClick */}
 				</main>
 
 				{isIngredientModalOpen && selectedIngredient && (

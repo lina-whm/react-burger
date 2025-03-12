@@ -1,42 +1,55 @@
-import React, { useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
+import { useDrop } from 'react-dnd'
 import {
 	ConstructorElement,
 	Button,
 	CurrencyIcon,
 } from '@ya.praktikum/react-developer-burger-ui-components'
-import classNames from 'classnames' 
+import classNames from 'classnames'
 import Modal from '../modal/modal'
 import OrderDetails from '../order-details/order-details'
+import { useAppDispatch, useAppSelector } from '../../services/hooks'
+import {
+	addIngredient,
+	removeIngredient,
+	moveIngredient,
+} from '../../services/slices/constructorSlice'
+import { ConstructorIngredient } from './../utils/types'
+import DraggableIngredient from './draggable-ingredient'
 import styles from './burger-constructor.module.css'
 
-interface Ingredient {
-	_id: string
-	name: string
-	type: string
-	price: number
-	image: string
-}
-
-interface BurgerConstructorProps {
-	selectedIngredients: Ingredient[]
-}
-
-const BurgerConstructor: React.FC<BurgerConstructorProps> = ({
-	selectedIngredients,
-}) => {
+const BurgerConstructor: React.FC = () => {
+	const dispatch = useAppDispatch()
+	const { bun, ingredients } = useAppSelector(state => state.constructor)
 	const [isOrderModalOpen, setIsOrderModalOpen] = useState(false)
 
-	const buns = selectedIngredients.filter(
-		ingredient => ingredient.type === 'bun'
-	)
-	const otherIngredients = selectedIngredients.filter(
-		ingredient => ingredient.type !== 'bun'
+	const ref = useRef<HTMLDivElement>(null)
+
+	const [, drop] = useDrop({
+		accept: 'ingredient',
+		drop: (item: Omit<ConstructorIngredient, 'uuid'>) => {
+			dispatch(addIngredient(item))
+		},
+	})
+
+	
+	drop(ref)
+
+	const moveCard = useCallback(
+		(dragIndex: number, hoverIndex: number) => {
+			dispatch(moveIngredient({ dragIndex, hoverIndex }))
+		},
+		[dispatch]
 	)
 
-	const totalPrice = selectedIngredients.reduce(
-		(sum, ingredient) => sum + ingredient.price,
-		0
-	)
+	const totalPrice = React.useMemo(() => {
+		const ingredientsSum = (ingredients || []).reduce(
+			(sum, item) => sum + item.price,
+			0
+		)
+		const bunSum = bun ? bun.price * 2 : 0
+		return ingredientsSum + bunSum
+	}, [bun, ingredients])
 
 	const handleOrderClick = () => {
 		setIsOrderModalOpen(true)
@@ -47,42 +60,42 @@ const BurgerConstructor: React.FC<BurgerConstructorProps> = ({
 	}
 
 	return (
-		<section className={classNames(styles.constructor)}>
+		<section className={classNames(styles.constructor)} ref={ref}>
 			{/* Верхняя булка */}
-			{buns.length > 0 && (
+			{bun && (
 				<div className={classNames(styles.bun, styles.bunTop)}>
 					<ConstructorElement
 						type='top'
 						isLocked={true}
-						text={`${buns[0].name} (верх)`}
-						price={buns[0].price}
-						thumbnail={buns[0].image}
+						text={`${bun.name} (верх)`}
+						price={bun.price}
+						thumbnail={bun.image}
 					/>
 				</div>
 			)}
 
 			{/* Список ингредиентов */}
 			<div className={classNames(styles.ingredientsList)}>
-				{otherIngredients.map((ingredient, index) => (
-					<div key={index} className={classNames(styles.ingredientItem)}>
-						<ConstructorElement
-							text={ingredient.name}
-							price={ingredient.price}
-							thumbnail={ingredient.image}
-						/>
-					</div>
+				{(ingredients || []).map((ingredient, index) => (
+					<DraggableIngredient
+						key={ingredient.uuid}
+						ingredient={ingredient}
+						index={index}
+						moveCard={moveCard}
+						onRemove={() => dispatch(removeIngredient(ingredient.uuid))}
+					/>
 				))}
 			</div>
 
 			{/* Нижняя булка */}
-			{buns.length > 0 && (
+			{bun && (
 				<div className={classNames(styles.bun)}>
 					<ConstructorElement
 						type='bottom'
 						isLocked={true}
-						text={`${buns[0].name} (низ)`}
-						price={buns[0].price}
-						thumbnail={buns[0].image}
+						text={`${bun.name} (низ)`}
+						price={bun.price}
+						thumbnail={bun.image}
 					/>
 				</div>
 			)}
@@ -100,6 +113,7 @@ const BurgerConstructor: React.FC<BurgerConstructorProps> = ({
 					size='large'
 					htmlType='button'
 					onClick={handleOrderClick}
+					disabled={!bun || (ingredients || []).length === 0}
 				>
 					Оформить заказ
 				</Button>

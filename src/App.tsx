@@ -1,64 +1,91 @@
-import React, { useEffect, useState } from 'react'
-import AppHeader from './components/app-header/app-header'
-import BurgerIngredients from './components/burger-ingredients/burger-ingredients'
-import BurgerConstructor from './components/burger-constructor/burger-constructor'
-import styles from './App.module.css'
-import { API_BASE } from './components/utils/api'
+import React, { useState } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useAppSelector } from './services/hooks';
+import { RootState } from './services/store/store';
+import { Ingredient, ConstructorIngredient } from './components/utils/types';
+import Modal from './components/modal/modal';
+import IngredientDetails from './components/ingredient-details/ingredient-details';
+import OrderDetails from './components/order-details/order-details';
+import AppHeader from './components/app-header/app-header';
+import BurgerIngredients from './components/burger-ingredients/burger-ingredients';
+import BurgerConstructor from './components/burger-constructor/burger-constructor';
+import styles from './App.module.css';
+import { createOrder } from './services/api/orderApi'; 
 
+function App() {
+	const [isIngredientModalOpen, setIsIngredientModalOpen] = useState(false);
+	const [selectedIngredient, setSelectedIngredient] =
+		useState<Ingredient | null>(null);
 
-interface Ingredient {
-	_id: string
-	name: string
-	type: string
-	proteins: number
-	fat: number
-	carbohydrates: number
-	calories: number
-	price: number
-	image: string
-	image_mobile: string
-	image_large: string
-	__v: number
-}
+	const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+	const [orderNumber, setOrderNumber] = useState<number | null>(null);
 
-const App = () => {
-	const [ingredients, setIngredients] = useState<Ingredient[]>([])
-	const [isLoading, setIsLoading] = useState(true)
-	const [error, setError] = useState<string | null>(null)
+	
+	const { bun, ingredients = [] } = useAppSelector(
+		(state: RootState) => state.burgerConstructor
+	);
 
-	useEffect(() => {
-		fetch(`${API_BASE}/ingredients`)
-			.then(response => {
-				if (!response.ok) {
-					throw new Error('Ошибка при загрузке данных')
-				}
-				return response.json()
-			})
-			.then(data => {
-				setIngredients(data.data)
-				setError(null)
-			})
-			.catch(error => {
-				console.error('Ошибка:', error)
-				setError(error.message)
-			})
-			.finally(() => setIsLoading(false))
-	}, [])
+	const handleOpenIngredientModal = (ingredient: Ingredient) => {
+		setSelectedIngredient(ingredient);
+		setIsIngredientModalOpen(true);
+	};
 
-	if (isLoading)
-		return <p className='text text_type_main-default'>Загрузка...</p>
-	if (error)
-		return <p className='text text_type_main-default'>Ошибка: {error}</p>
+	const handleCloseIngredientModal = () => {
+		setIsIngredientModalOpen(false);
+		setSelectedIngredient(null);
+	};
+
+	const handleOrderClick = async () => {
+		if (!bun || ingredients.length === 0) return;
+
+		const ingredientIds = [
+			bun._id,
+			...ingredients.map((item: ConstructorIngredient) => item._id),
+			bun._id,
+		];
+
+		try {
+			const orderNumber = await createOrder(ingredientIds);
+			setOrderNumber(orderNumber);
+			setIsOrderModalOpen(true);
+		} catch (error) {
+			console.error('Ошибка при оформлении заказа:', error);
+		}
+	};
+
+	const handleCloseOrderModal = () => {
+		setIsOrderModalOpen(false);
+		setOrderNumber(null);
+	};
 
 	return (
-		<div className='App'>
-			<AppHeader />
-			<main className={styles.main}>
-				<BurgerIngredients ingredients={ingredients} />
-				<BurgerConstructor selectedIngredients={ingredients} />
-			</main>
-		</div>
-	)
+		<DndProvider backend={HTML5Backend}>
+			<div className={styles.App}>
+				<AppHeader />
+				<main className={styles.main}>
+					<BurgerIngredients onIngredientClick={handleOpenIngredientModal} />
+					<BurgerConstructor onOrderClick={handleOrderClick} />
+				</main>
+
+				{/* Модальное окно для ингредиента */}
+				{isIngredientModalOpen && selectedIngredient && (
+					<Modal
+						onClose={handleCloseIngredientModal}
+						title='Детали ингредиента'>
+						<IngredientDetails ingredient={selectedIngredient} />
+					</Modal>
+				)}
+
+				{/* Модальное окно для заказа */}
+				{isOrderModalOpen && (
+					<Modal onClose={handleCloseOrderModal}>
+						<OrderDetails orderNumber={orderNumber || 0} />
+					</Modal>
+				)}
+			</div>
+		</DndProvider>
+	);
 }
 
-export default App
+export default App;

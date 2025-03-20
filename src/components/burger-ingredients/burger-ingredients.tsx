@@ -1,144 +1,174 @@
-import React, { useState } from 'react';
-import { Tab } from '@ya.praktikum/react-developer-burger-ui-components';
-import IngredientCard from './ingredient-card/ingredient-card';
-import Modal from '../modal/modal';
-import IngredientDetails from '../ingredient-details/ingredient-details';
-import classNames from 'classnames';
-import styles from './burger-ingredients.module.css';
-
-interface Ingredient {
-  _id: string;
-  name: string;
-  type: string;
-  price: number;
-  image: string;
-  calories: number;
-  proteins: number;
-  fat: number;
-  carbohydrates: number;
-}
+import React, { useEffect, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { Tab } from '@ya.praktikum/react-developer-burger-ui-components'
+import IngredientCard from './ingredient-card/ingredient-card'
+import styles from './burger-ingredients.module.css'
+import { RootState } from '../../services/store/store'
+import Modal from '../modal/modal'
+import IngredientDetails from '../ingredient-details/ingredient-details'
+import { Ingredient } from '../utils/types'
+import { fetchIngredients } from '../../services/slices/ingredientsSlice'
+import { useAppDispatch } from '../../services/hooks/useAppDispatch'
 
 interface BurgerIngredientsProps {
-  ingredients: Ingredient[];
+	onIngredientClick: (ingredient: Ingredient) => void
 }
 
-const BurgerIngredients: React.FC<BurgerIngredientsProps> = ({ ingredients }) => {
-  const [currentTab, setCurrentTab] = useState('bun');
-  const [selectedIngredient, setSelectedIngredient] = useState<Ingredient | null>(null);
+const BurgerIngredients: React.FC<BurgerIngredientsProps> = ({
+	onIngredientClick,
+}) => {
+	const dispatch = useAppDispatch()
+	const { items, loading, error } = useSelector(
+		(state: RootState) => state.ingredients
+	);
+	const [currentTab, setCurrentTab] = useState<'bun' | 'sauce' | 'main'>('bun')
+	const [selectedIngredient, setSelectedIngredient] =
+		useState<Ingredient | null>(null)
 
-  const handleTabClick = (tab: string) => {
-    setCurrentTab(tab);
-    const element = document.getElementById(tab);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+	const bunRef = useRef<HTMLDivElement>(null)
+	const sauceRef = useRef<HTMLDivElement>(null)
+	const mainRef = useRef<HTMLDivElement>(null)
 
-  const handleIngredientClick = (ingredient: Ingredient) => {
-    setSelectedIngredient(ingredient);
-  };
+	useEffect(() => {
+		dispatch(fetchIngredients())
+	}, [dispatch])
 
-  const closeModal = () => {
-    setSelectedIngredient(null);
-  };
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			entries => {
+				entries.forEach(entry => {
+					if (entry.isIntersecting) {
+						switch (entry.target.id) {
+							case 'buns':
+								setCurrentTab('bun')
+								break
+							case 'sauces':
+								setCurrentTab('sauce')
+								break
+							case 'mains':
+								setCurrentTab('main')
+								break
+							default:
+								break
+						}
+					}
+				})
+			},
+			{ threshold: 0.5 }
+		)
 
-  const buns = ingredients.filter(ingredient => ingredient.type === 'bun');
-  const sauces = ingredients.filter(ingredient => ingredient.type === 'sauce');
-  const mains = ingredients.filter(ingredient => ingredient.type === 'main');
+		if (bunRef.current) observer.observe(bunRef.current)
+		if (sauceRef.current) observer.observe(sauceRef.current)
+		if (mainRef.current) observer.observe(mainRef.current)
 
-  return (
-    <section className={classNames(styles.ingredients)}>
-      <h1 className={classNames('text', 'text_type_main-large', 'mt-10', 'mb-5')}>
-        Соберите бургер
-      </h1>
+		return () => observer.disconnect()
+	}, [])
 
-      <div className={classNames(styles.tabs)}>
-        <Tab
-          value="bun"
-          active={currentTab === 'bun'}
-          onClick={() => handleTabClick('bun')}
-        >
-          Булки
-        </Tab>
-        <Tab
-          value="sauce"
-          active={currentTab === 'sauce'}
-          onClick={() => handleTabClick('sauce')}
-        >
-          Соусы
-        </Tab>
-        <Tab
-          value="main"
-          active={currentTab === 'main'}
-          onClick={() => handleTabClick('main')}
-        >
-          Начинки
-        </Tab>
-      </div>
+	const handleTabClick = (tab: 'bun' | 'sauce' | 'main') => {
+		setCurrentTab(tab)
+		const section = document.getElementById(
+			tab === 'bun' ? 'buns' : tab === 'sauce' ? 'sauces' : 'mains'
+		)
+		if (section) {
+			section.scrollIntoView({ behavior: 'smooth' })
+		}
+	}
 
-      <div className={classNames(styles.ingredientsList)}>
-        <h2 id="bun" className={classNames('text', 'text_type_main-medium', 'mt-10', 'mb-6')}>
-          Булки
-        </h2>
-        <div className={classNames(styles.ingredientsSection)}>
-          {buns.map(bun => (
-            <IngredientCard
-              key={bun._id}
-              name={bun.name}
-              price={bun.price}
-              image={bun.image}
-              onClick={() => handleIngredientClick(bun)}
-            />
-          ))}
-        </div>
+	const handleIngredientClick = (ingredient: Ingredient) => {
+		setSelectedIngredient(ingredient)
+		onIngredientClick(ingredient)
+	}
 
-        <h2 id="sauce" className={classNames('text', 'text_type_main-medium', 'mt-10', 'mb-6')}>
-          Соусы
-        </h2>
-        <div className={classNames(styles.ingredientsSection)}>
-          {sauces.map(sauce => (
-            <IngredientCard
-              key={sauce._id}
-              name={sauce.name}
-              price={sauce.price}
-              image={sauce.image}
-              onClick={() => handleIngredientClick(sauce)}
-            />
-          ))}
-        </div>
+	const handleCloseModal = () => {
+		setSelectedIngredient(null)
+	}
 
-        <h2 id="main" className={classNames('text', 'text_type_main-medium', 'mt-10', 'mb-6')}>
-          Начинки
-        </h2>
-        <div className={classNames(styles.ingredientsSection)}>
-          {mains.map(main => (
-            <IngredientCard
-              key={main._id}
-              name={main.name}
-              price={main.price}
-              image={main.image}
-              onClick={() => handleIngredientClick(main)}
-            />
-          ))}
-        </div>
-      </div>
+	const buns = items.filter(item => item.type === 'bun')
+	const sauces = items.filter(item => item.type === 'sauce')
+	const mains = items.filter(item => item.type === 'main')
 
-      {selectedIngredient && (
-        <Modal onClose={closeModal} title="Детали ингредиента">
-          <IngredientDetails
-            ingredient={{
-              image: selectedIngredient.image,
-              name: selectedIngredient.name,
-              calories: selectedIngredient.calories,
-              proteins: selectedIngredient.proteins,
-              fat: selectedIngredient.fat,
-              carbohydrates: selectedIngredient.carbohydrates,
-            }}
-          />
-        </Modal>
-      )}
-    </section>
-  );
-};
+	if (loading) return <p>Загрузка...</p>
+	if (error) return <p>Ошибка: {error}</p>
 
-export default BurgerIngredients;
+	return (
+		<section className={styles.ingredients}>
+			<h1 className='text text_type_main-large mt-10 mb-5'>Соберите бургер</h1>
+
+			{/* Табы для переключения категорий */}
+			<div className={styles.tabs}>
+				<Tab
+					value='bun'
+					active={currentTab === 'bun'}
+					onClick={() => handleTabClick('bun')}>
+					Булки
+				</Tab>
+				<Tab
+					value='sauce'
+					active={currentTab === 'sauce'}
+					onClick={() => handleTabClick('sauce')}>
+					Соусы
+				</Tab>
+				<Tab
+					value='main'
+					active={currentTab === 'main'}
+					onClick={() => handleTabClick('main')}>
+					Начинки
+				</Tab>
+			</div>
+
+			{/* Единый контейнер для скролла */}
+			<div className={styles.scrollContainer}>
+				{/* Секция булок */}
+				<div className={styles.category} id='buns' ref={bunRef}>
+					<h2 className='text text_type_main-medium mb-6'>Булки</h2>
+					<div className={styles.items}>
+						{buns.map((ingredient) => (
+							<IngredientCard
+								key={ingredient._id}
+								ingredient={ingredient}
+								onIngredientClick={() => handleIngredientClick(ingredient)}
+							/>
+						))}
+					</div>
+				</div>
+
+				{/* Секция соусов */}
+				<div className={styles.category} id='sauces' ref={sauceRef}>
+					<h2 className='text text_type_main-medium mb-6'>Соусы</h2>
+					<div className={styles.items}>
+						{sauces.map((ingredient) => (
+							<IngredientCard
+								key={ingredient._id}
+								ingredient={ingredient}
+								onIngredientClick={() => handleIngredientClick(ingredient)}
+							/>
+						))}
+					</div>
+				</div>
+
+				{/* Секция начинок */}
+				<div className={styles.category} id='mains' ref={mainRef}>
+					<h2 className='text text_type_main-medium mb-6'>Начинки</h2>
+					<div className={styles.items}>
+						{mains.map((ingredient: Ingredient) => (
+							<IngredientCard
+								key={ingredient._id}
+								ingredient={ingredient}
+								onIngredientClick={() => handleIngredientClick(ingredient)}
+							/>
+						))}
+					</div>
+				</div>
+			</div>
+
+			{/* Модальное окно с деталями ингредиента */}
+			{selectedIngredient && (
+				<Modal onClose={handleCloseModal}>
+					<IngredientDetails ingredient={selectedIngredient} />
+				</Modal>
+			)}
+		</section>
+	);
+}
+
+export default BurgerIngredients

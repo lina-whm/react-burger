@@ -75,7 +75,7 @@
   border-radius: 0 0 40px 40px;
 }
 .hover {
-  box-shadow: 0 0 20px rgba(76, 76, 255, 0.3);
+   box-shadow: 0 0 20px rgba(76, 76, 255, 0.3);
   transition: box-shadow 0.3s ease;
 }
 

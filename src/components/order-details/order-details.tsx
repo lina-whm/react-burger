@@ -3,7 +3,7 @@ import { CheckMarkIcon } from '@ya.praktikum/react-developer-burger-ui-component
 import styles from './order-details.module.css';
 
 interface OrderDetailsProps {
-	orderNumber: number;
+	orderNumber: number
 }
 
 const OrderDetails: React.FC<OrderDetailsProps> = ({ orderNumber }) => {

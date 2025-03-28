@@ -1,0 +1,45 @@
+{
+	"version": "0.2",
+	"language": "en,ru",
+	"words": [
+		"praktikum",
+		"uuidv",
+		"checkmark",
+		"Табы",
+		"скролла",
+		"Автогенерируемые",
+		"Stellar",
+		"Burgers",
+		"constructorSlice",
+		"ingredient",
+		"draggable",
+		"burger",
+		"bun",
+		"modal",
+		"svgo",
+		"webpack",
+		"eslint",
+		"tsconfig",
+		"redux",
+		"middleware",
+		"selectors",
+		"slices"
+	],
+	"ignorePaths": [
+		"node_modules",
+		"package-lock.json",
+		"build",
+		"dist",
+		"coverage"
+	],
+	"dictionaries": ["typescript", "css", "html", "node", "react"],
+	"ignoreWords": ["uuidv"],
+	"flagWords": [],
+	"patterns": [
+		{
+			"name": "Markdown links",
+			"pattern": "/\\[.+?\\]\\([^)]+\\)/g",
+			"description": "Markdown links"
+		}
+	]
+}

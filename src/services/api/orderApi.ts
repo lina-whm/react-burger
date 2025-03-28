@@ -1,15 +1,20 @@
-import { API_BASE } from '../../components/utils/api'
+import { request } from '../../components/utils/api'
 
-export const createOrder = async (ingredientIds: string[]) => {
-	const response = await fetch(`${API_BASE}/orders`, {
+export interface OrderResponse {
+	success: boolean
+	name: string
+	order: {
+		number: number
+	}
+}
+
+export const createOrder = (ingredientIds: string[]) => {
+	return request<OrderResponse>('/orders', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
+			Authorization: localStorage.getItem('accessToken') || '',
 		},
 		body: JSON.stringify({ ingredients: ingredientIds }),
 	})
-	const data = await response.json()
-	return data.order.number
 }
-
-export {}

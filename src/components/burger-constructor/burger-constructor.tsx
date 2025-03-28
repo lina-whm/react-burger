@@ -1,96 +1,86 @@
-import React, { useRef } from 'react';
-import { useDrop } from 'react-dnd';
+import React from 'react'
+import { useDrop } from 'react-dnd'
 import {
 	ConstructorElement,
-	CurrencyIcon,
 	Button,
-} from '@ya.praktikum/react-developer-burger-ui-components';
-import { useAppSelector, useAppDispatch } from '../../services/hooks';
+	CurrencyIcon,
+} from '@ya.praktikum/react-developer-burger-ui-components'
+import { useAppSelector, useAppDispatch } from '../../services/hooks'
 import {
-	addBun,
 	addIngredient,
 	clearConstructor,
-} from '../../services/slices/constructorSlice';
-import DraggableIngredient from './draggable-ingredient';
-import Modal from '../modal/modal';
-import OrderDetails from '../order-details/order-details';
-import styles from './burger-constructor.module.css';
-import { Ingredient, ConstructorIngredient } from '../utils/types';
-import { RootState } from '../../services/store/store';
-import classNames from 'classnames';
+} from '../../services/slices/constructorSlice'
+import { createOrder } from '../../services/slices/orderSlice'
+import DraggableIngredient from './draggable-ingredient'
+import OrderDetails from '../order-details/order-details'
+import Modal from '../modal/modal'
+import styles from './burger-constructor.module.css'
+import classNames from 'classnames'
+import { Ingredient, IngredientType } from '../../components/utils/types'
 
-interface BurgerConstructorProps {
-	onOrderClick: () => void;
+interface DropCollectedProps {
+	isHover: boolean
 }
 
-const BurgerConstructor: React.FC<BurgerConstructorProps> = ({
-	onOrderClick,
-}) => {
-	const dispatch = useAppDispatch();
-	const { bun, ingredients = [] } = useAppSelector(
-		(state: RootState) => state.burgerConstructor
-	);
-	const {
-		orderNumber,
-		loading: orderLoading,
-		error: orderError,
-	} = useAppSelector((state: RootState) => state.order);
-	const dndRef = useRef<HTMLDivElement>(null);
+interface DraggedItem {
+	ingredient: Ingredient
+}
 
-	const [{ isHoverBun }, dropBun] = useDrop({
-		accept: 'bun',
-		drop: (item: Ingredient) => {
-			dispatch(addBun(item));
-		},
-		collect: (monitor) => ({
-			isHoverBun: monitor.isOver(),
-		}),
-	});
+const BurgerConstructor: React.FC = () => {
+	const dispatch = useAppDispatch()
+	const { bun, ingredients } = useAppSelector(state => state.burgerConstructor)
+	const { orderNumber, loading } = useAppSelector(state => state.order)
+	const [isOrderModalOpen, setIsOrderModalOpen] = React.useState(false)
 
-	const [{ isHoverIngredient }, dropIngredient] = useDrop({
-		accept: 'ingredient',
-		drop: (item: Ingredient) => {
-			if (item?._id && item?.type) {
-				dispatch(addIngredient(item));
-			} else {
-				console.error('Invalid drop item:', item);
-			}
-		},
-		collect: (monitor) => ({
-			isHoverIngredient: monitor.isOver(),
-		}),
-	});
+	const [{ isHover }, drop] = useDrop<DraggedItem, unknown, DropCollectedProps>(
+		{
+			accept: ['ingredient', 'bun'],
+			drop: item => {
+				dispatch(addIngredient(item.ingredient))
+			},
+			collect: monitor => ({
+				isHover: monitor.isOver(),
+			}),
+		}
+	)
 
-	const totalPrice = React.useMemo(() => {
-		const ingredientsSum = ingredients.reduce(
-			(sum: number, item: ConstructorIngredient) => sum + item.price,
-			0
-		);
-		const bunSum = bun ? bun.price * 2 : 0;
-		return ingredientsSum + bunSum;
-	}, [bun, ingredients]);
-
-	const isOrderButtonDisabled = !bun || ingredients.length === 0;
-
-	const handleOrderClick = async () => {
-		if (!bun || ingredients.length === 0) return;
+	const handleOrderClick = () => {
+		if (!bun || ingredients.length === 0) return
 
 		const ingredientIds = [
 			bun._id,
-			...ingredients.map((item: ConstructorIngredient) => item._id),
+			...ingredients.map(item => item._id),
 			bun._id,
-		];
+		]
 
-		onOrderClick();
-	};
+		dispatch(createOrder(ingredientIds))
+			.unwrap()
+			.then(() => {
+				setIsOrderModalOpen(true)
+				dispatch(clearConstructor())
+			})
+			.catch(error => {
+				console.error('Ошибка оформления заказа:', error)
+			})
+	}
+
+	const totalPrice = React.useMemo(() => {
+		const ingredientsSum = ingredients.reduce(
+			(sum, item) => sum + item.price,
+			0
+		)
+		const bunSum = bun ? bun.price * 2 : 0
+		return ingredientsSum + bunSum
+	}, [bun, ingredients])
 
 	return (
-		<div className={classNames(styles.constructor)} ref={dndRef}>
-			<div
-				className={classNames(styles.bunSection, styles.topBun, {
-					[styles.hover]: isHoverBun,
-				})}
-				ref={dropBun}>
+		<div
+			ref={drop}
+			className={classNames(styles.constructor, { [styles.hover]: isHover })}
+			data-testid='burger-constructor'
+		>
+			{/* Верхняя булка */}
+			<div className={classNames(styles.bunSection, styles.top)}>
 				{bun ? (
 					<ConstructorElement
 						type='top'
@@ -100,38 +90,45 @@ const BurgerConstructor: React.FC<BurgerConstructorProps> = ({
 						thumbnail={bun.image}
 					/>
 				) : (
-					<div className={classNames(styles.placeholder)}>
+					<div
+						className={classNames(
+							styles.placeholder,
+							'text text_type_main-default'
+						)}
+					>
 						Перетащите булку (верх)
 					</div>
 				)}
 			</div>
 
+			{/* Список ингредиентов */}
 			<div
 				className={classNames(styles.ingredientsList, {
-					[styles.hover]: isHoverIngredient,
-					[styles.withScroll]: ingredients.length > 2, 
+					[styles.withScroll]: ingredients.length > 4,
 				})}
-				ref={dropIngredient}>
+			>
 				{ingredients.length > 0 ? (
-					ingredients.map((item: ConstructorIngredient, index: number) => (
+					ingredients.map((item, index) => (
 						<DraggableIngredient
-							key={item.uuid}
+							key={item.uniqueId}
 							ingredient={item}
 							index={index}
 						/>
 					))
 				) : (
-					<div className={classNames(styles.placeholder)}>
-						Перетащите начинку или соус
+					<div
+						className={classNames(
+							styles.placeholder,
+							'text text_type_main-default'
+						)}
+					>
+						Перетащите начинку
 					</div>
 				)}
 			</div>
 
-			<div
-				className={classNames(styles.bunSection, styles.bottomBun, {
-					[styles.hover]: isHoverBun,
-				})}
-				ref={dropBun}>
+			{/* Нижняя булка */}
+			<div className={classNames(styles.bunSection, styles.bottom)}>
 				{bun ? (
 					<ConstructorElement
 						type='bottom'
@@ -141,42 +138,41 @@ const BurgerConstructor: React.FC<BurgerConstructorProps> = ({
 						thumbnail={bun.image}
 					/>
 				) : (
-					<div className={classNames(styles.placeholder)}>
+					<div
+						className={classNames(
+							styles.placeholder,
+							'text text_type_main-default'
+						)}
+					>
 						Перетащите булку (низ)
 					</div>
 				)}
 			</div>
 
-			<div className={classNames(styles.total)}>
-				<p className={classNames(styles.totalPrice)}>
+			{/* Итого */}
+			<div className={styles.total}>
+				<div className={styles.totalPrice}>
 					<span className='text text_type_digits-medium'>{totalPrice}</span>
 					<CurrencyIcon type='primary' />
-				</p>
+				</div>
 				<Button
+					htmlType='button'
 					type='primary'
 					size='large'
-					htmlType='button'
 					onClick={handleOrderClick}
-					disabled={isOrderButtonDisabled || orderLoading}>
-					{orderLoading ? 'Оформление...' : 'Оформить заказ'}
+					disabled={!bun || ingredients.length === 0 || loading}
+				>
+					{loading ? 'Оформляем...' : 'Оформить заказ'}
 				</Button>
 			</div>
 
-			{orderError && (
-				<div className={classNames(styles.error)}>
-					<p className='text text_type_main-default text_color_error'>
-						{orderError}
-					</p>
-				</div>
-			)}
-
-			{orderNumber && (
-				<Modal onClose={() => dispatch(clearConstructor())}>
+			{isOrderModalOpen && orderNumber && (
+				<Modal onClose={() => setIsOrderModalOpen(false)}>
 					<OrderDetails orderNumber={orderNumber} />
 				</Modal>
 			)}
 		</div>
-	);
-};
+	)
+}
 
-export default BurgerConstructor;
+export default BurgerConstructor

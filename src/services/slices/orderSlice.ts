@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { API_BASE } from '../../components/utils/api'
+import { request } from '../../components/utils/api'
+import type { RootState } from '../store/store'
 
 interface OrderState {
 	orderNumber: number | null
@@ -17,34 +18,34 @@ export const createOrder = createAsyncThunk(
 	'order/createOrder',
 	async (ingredientIds: string[], { rejectWithValue }) => {
 		try {
-			const response = await fetch(`${API_BASE}/orders`, {
+			const response = await request<{
+				success: boolean
+				name: string
+				order: { number: number }
+			}>('/orders', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: localStorage.getItem('accessToken') || '', 
+					Authorization: localStorage.getItem('accessToken') || '',
 				},
 				body: JSON.stringify({ ingredients: ingredientIds }),
-			});
-
-			if (!response.ok) {
-				throw new Error(`Ошибка ${response.status}`);
-			}
-
-			const data = await response.json();
-			return data.order.number;
+			})
+			return response.order.number
 		} catch (error) {
 			return rejectWithValue(
-				error instanceof Error ? error.message : 'Неизвестная ошибка'
-			);
+				error instanceof Error ? error.message : 'Unknown error'
+			)
 		}
 	}
-);
+)
+
 const orderSlice = createSlice({
 	name: 'order',
 	initialState,
 	reducers: {
 		clearOrder: state => {
 			state.orderNumber = null
+			state.error = null
 		},
 	},
 	extraReducers: builder => {
@@ -65,5 +66,4 @@ const orderSlice = createSlice({
 })
 
 export const { clearOrder } = orderSlice.actions
-
 export default orderSlice.reducer

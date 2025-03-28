@@ -1,75 +1,66 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { v4 as uuidv4 } from 'uuid';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { v4 as uuidv4 } from 'uuid'
 import {
 	Ingredient,
 	ConstructorIngredient,
-} from '../../components/utils/types';
+	IngredientType,
+} from '../../components/utils/types'
 
-interface BurgerConstructorState {
-	bun: ConstructorIngredient | null;
-	ingredients: ConstructorIngredient[];
+interface ConstructorState {
+	bun: ConstructorIngredient | null
+	ingredients: ConstructorIngredient[]
 }
 
-const initialState: BurgerConstructorState = {
+const initialState: ConstructorState = {
 	bun: null,
 	ingredients: [],
-};
+}
 
-const burgerConstructorSlice = createSlice({
-	name: 'burgerConstructor',
+export const constructorSlice = createSlice({
+	name: 'constructor',
 	initialState,
 	reducers: {
-		addBun: {
-			reducer(state, action: PayloadAction<Ingredient>) {
-				state.bun = {
-					...action.payload,
-					uuid: uuidv4(),
-				};
-			},
-			prepare(ingredient: Ingredient) {
-				return { payload: ingredient };
-			},
-		},
 		addIngredient: {
-			reducer(state, action: PayloadAction<Ingredient>) {
-				const newItem: ConstructorIngredient = {
-					...action.payload,
-					uuid: uuidv4(),
-				};
-				state.ingredients.push(newItem);
+			reducer(state, action: PayloadAction<ConstructorIngredient>) {
+				if (action.payload.type === 'bun') {
+					state.bun = action.payload
+				} else {
+					state.ingredients.push(action.payload)
+				}
 			},
 			prepare(ingredient: Ingredient) {
-				return { payload: ingredient };
+				return {
+					payload: {
+						...ingredient,
+						uniqueId: uuidv4(),
+					} as ConstructorIngredient,
+				}
 			},
 		},
 		removeIngredient: (state, action: PayloadAction<string>) => {
 			state.ingredients = state.ingredients.filter(
-				(item) => item.uuid !== action.payload
-			);
+				item => item.uniqueId !== action.payload
+			)
 		},
 		moveIngredient: (
 			state,
 			action: PayloadAction<{ dragIndex: number; hoverIndex: number }>
 		) => {
-			const { dragIndex, hoverIndex } = action.payload;
-			const newIngredients = [...state.ingredients];
-			const [removed] = newIngredients.splice(dragIndex, 1);
-			newIngredients.splice(hoverIndex, 0, removed);
-			state.ingredients = newIngredients;
+			const { dragIndex, hoverIndex } = action.payload
+			const newIngredients = [...state.ingredients]
+			const [removed] = newIngredients.splice(dragIndex, 1)
+			newIngredients.splice(hoverIndex, 0, removed)
+			state.ingredients = newIngredients
 		},
-		clearConstructor: (state) => {
-			state.bun = null;
-			state.ingredients = [];
-		},
+		clearConstructor: () => initialState,
 	},
-});
+})
 
 export const {
-	addBun,
 	addIngredient,
 	removeIngredient,
 	moveIngredient,
 	clearConstructor,
-} = burgerConstructorSlice.actions;
+} = constructorSlice.actions
 
-export default burgerConstructorSlice.reducer;
+export default constructorSlice.reducer

@@ -1,64 +1,63 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { v4 as uuidv4 } from 'uuid'
-import { ConstructorIngredient } from '../../components/utils/types'
+import constructorSlice from './constructorSlice'
+import {
+	ConstructorIngredient,
+	IngredientType,
+} from '../../components/utils/types'
 
-export interface ConstructorState {
-	bun: ConstructorIngredient | null
-	ingredients: ConstructorIngredient[]
-}
-
-export const initialState: ConstructorState = {
+const initialState = {
 	bun: null,
 	ingredients: [],
 }
 
-const constructorSlice = createSlice({
-	name: 'constructor',
-	initialState,
-	reducers: {
-		addIngredient: {
-			reducer(state, action: PayloadAction<ConstructorIngredient>) {
-				if (action.payload.type === 'bun') {
-					state.bun = action.payload
-				} else {
-					state.ingredients.push(action.payload)
-				}
+describe('constructorSlice', () => {
+	it('should return initial state', () => {
+		expect(constructorSlice(undefined, { type: '' })).toEqual(initialState)
+	})
+
+	it('should handle addIngredient for bun', () => {
+		const bun: ConstructorIngredient = {
+			_id: '1',
+			name: 'Булка',
+			type: 'bun' as IngredientType,
+			price: 100,
+			image: 'image',
+			uniqueId: uuidv4(),
+		}
+		const action = {
+			type: 'constructor/addIngredient',
+			payload: bun,
+		}
+		const result = constructorSlice(initialState, action)
+		expect(result.bun).toEqual(bun)
+	})
+
+	it('should handle clearConstructor', () => {
+		const state = {
+			bun: {
+				_id: '1',
+				name: 'Булка',
+				type: 'bun' as IngredientType,
+				price: 100,
+				image: 'image',
+				uniqueId: uuidv4(),
 			},
-			prepare(ingredient: Omit<ConstructorIngredient, 'uuid'>) {
-				return {
-					payload: {
-						...ingredient,
-						uuid: uuidv4(),
-					},
-				}
-			},
-		},
-		removeIngredient: (state, action: PayloadAction<string>) => {
-			state.ingredients = state.ingredients.filter(
-				item => item.uuid !== action.payload
-			)
-		},
-		moveIngredient: (
-			state,
-			action: PayloadAction<{ dragIndex: number; hoverIndex: number }>
-		) => {
-			const newIngredients = [...state.ingredients]
-			const [removed] = newIngredients.splice(action.payload.dragIndex, 1)
-			newIngredients.splice(action.payload.hoverIndex, 0, removed)
-			state.ingredients = newIngredients
-		},
-		clearConstructor: state => {
-			state.bun = null
-			state.ingredients = []
-		},
-	},
+			ingredients: [
+				{
+					_id: '2',
+					name: 'Начинка',
+					type: 'main' as IngredientType,
+					price: 50,
+					image: 'image',
+					uniqueId: uuidv4(),
+				},
+			],
+		}
+		const action = {
+			type: 'constructor/clearConstructor',
+		}
+		const result = constructorSlice(state, action)
+		expect(result).toEqual(initialState)
+	})
 })
-
-export const {
-	addIngredient,
-	removeIngredient,
-	moveIngredient,
-	clearConstructor,
-} = constructorSlice.actions
-
-export default constructorSlice.reducer

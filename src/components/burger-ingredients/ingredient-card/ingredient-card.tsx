@@ -18,13 +18,14 @@ const IngredientCard: React.FC<IngredientCardProps> = ({
 	const { ingredients = [], bun } = useAppSelector(
 		(state: RootState) => state.burgerConstructor
 	)
-const [{ isDragging }, drag] = useDrag(() => ({
-	type: ingredient.type === 'bun' ? 'bun' : 'ingredient',
-	item: { ingredient },
-	collect: monitor => ({
-		isDragging: monitor.isDragging(),
-	}),
-}))
+
+	const [{ isDragging }, drag] = useDrag(() => ({
+		type: ingredient.type === 'bun' ? 'bun' : 'ingredient',
+		item: { ingredient },
+		collect: monitor => ({
+			isDragging: monitor.isDragging(),
+		}),
+	}))
 
 	const count = React.useMemo(() => {
 		if (ingredient.type === 'bun') {

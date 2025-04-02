@@ -1,10 +1,19 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styles from './ingredient-details.module.css'
-import { Ingredient, IngredientType } from '../utils/types'
 
 interface IngredientDetailsProps {
-	ingredient: Ingredient
+	ingredient: {
+		_id: string
+		name: string
+		type: string
+		price: number
+		image: string
+		calories: number
+		proteins: number
+		fat: number
+		carbohydrates: number
+	}
 }
 
 const IngredientDetails: React.FC<IngredientDetailsProps> = ({
@@ -58,19 +67,30 @@ const IngredientDetails: React.FC<IngredientDetailsProps> = ({
 	)
 }
 
+const ingredientPropTypes = PropTypes.shape({
+	_id: PropTypes.string.isRequired,
+	name: PropTypes.string.isRequired,
+	type: PropTypes.string.isRequired,
+	price: PropTypes.number.isRequired,
+	image: PropTypes.string.isRequired,
+	calories: PropTypes.number.isRequired,
+	proteins: PropTypes.number.isRequired,
+	fat: PropTypes.number.isRequired,
+	carbohydrates: PropTypes.number.isRequired,
+}).isRequired as React.Validator<{
+	_id: string
+	name: string
+	type: string
+	price: number
+	image: string
+	calories: number
+	proteins: number
+	fat: number
+	carbohydrates: number
+}>
+
 IngredientDetails.propTypes = {
-	ingredient: PropTypes.exact({
-		_id: PropTypes.string.isRequired,
-		name: PropTypes.string.isRequired,
-		type: PropTypes.oneOf(['bun', 'sauce', 'main'] as IngredientType[])
-			.isRequired,
-		price: PropTypes.number.isRequired,
-		image: PropTypes.string.isRequired,
-		calories: PropTypes.number.isRequired,
-		proteins: PropTypes.number.isRequired,
-		fat: PropTypes.number.isRequired,
-		carbohydrates: PropTypes.number.isRequired,
-	}).isRequired,
+	ingredient: ingredientPropTypes,
 }
 
 export default IngredientDetails

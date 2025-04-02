@@ -23,6 +23,10 @@ describe('constructorSlice', () => {
 			type: 'bun' as IngredientType,
 			price: 100,
 			image: 'image',
+			calories: 300,
+			proteins: 10,
+			fat: 5,
+			carbohydrates: 50,
 			uniqueId: uuidv4(),
 		}
 		const action = {
@@ -41,6 +45,10 @@ describe('constructorSlice', () => {
 				type: 'bun' as IngredientType,
 				price: 100,
 				image: 'image',
+				calories: 300,
+				proteins: 10,
+				fat: 5,
+				carbohydrates: 50,
 				uniqueId: uuidv4(),
 			},
 			ingredients: [
@@ -50,6 +58,10 @@ describe('constructorSlice', () => {
 					type: 'main' as IngredientType,
 					price: 50,
 					image: 'image',
+					calories: 200,
+					proteins: 5,
+					fat: 3,
+					carbohydrates: 30,
 					uniqueId: uuidv4(),
 				},
 			],

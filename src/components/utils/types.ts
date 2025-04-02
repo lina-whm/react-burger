@@ -6,10 +6,13 @@ export interface Ingredient {
 	type: IngredientType
 	price: number
 	image: string
-	calories?: number
-	proteins?: number
-	fat?: number
-	carbohydrates?: number
+	image_mobile?: string
+	image_large?: string
+	calories: number
+	proteins: number
+	fat: number
+	carbohydrates: number
+	__v?: number
 }
 
 export interface ConstructorIngredient extends Ingredient {

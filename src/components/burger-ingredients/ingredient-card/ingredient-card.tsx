@@ -4,7 +4,7 @@ import { CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components
 import { useAppSelector } from '../../../services/hooks/useAppSelector'
 import { RootState } from '../../../services/store/store'
 import styles from './ingredient-card.module.css'
-import { Ingredient, IngredientType } from '../../utils/types'
+import { Ingredient } from '../../utils/types'
 
 interface IngredientCardProps {
 	ingredient: Ingredient
@@ -18,14 +18,13 @@ const IngredientCard: React.FC<IngredientCardProps> = ({
 	const { ingredients = [], bun } = useAppSelector(
 		(state: RootState) => state.burgerConstructor
 	)
-
-	const [{ isDragging }, drag] = useDrag(() => ({
-		type: ingredient.type === 'bun' ? 'bun' : 'ingredient',
-		item: { ingredient },
-		collect: monitor => ({
-			isDragging: monitor.isDragging(),
-		}),
-	}))
+const [{ isDragging }, drag] = useDrag(() => ({
+	type: ingredient.type === 'bun' ? 'bun' : 'ingredient',
+	item: { ingredient },
+	collect: monitor => ({
+		isDragging: monitor.isDragging(),
+	}),
+}))
 
 	const count = React.useMemo(() => {
 		if (ingredient.type === 'bun') {

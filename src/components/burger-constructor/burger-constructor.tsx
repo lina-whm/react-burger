@@ -16,7 +16,7 @@ import OrderDetails from '../order-details/order-details'
 import Modal from '../modal/modal'
 import styles from './burger-constructor.module.css'
 import classNames from 'classnames'
-import { Ingredient, IngredientType } from '../../components/utils/types'
+import { Ingredient } from '../../components/utils/types'
 
 interface DropCollectedProps {
 	isHover: boolean
@@ -32,17 +32,15 @@ const BurgerConstructor: React.FC = () => {
 	const { orderNumber, loading } = useAppSelector(state => state.order)
 	const [isOrderModalOpen, setIsOrderModalOpen] = React.useState(false)
 
-	const [{ isHover }, drop] = useDrop<DraggedItem, unknown, DropCollectedProps>(
-		{
-			accept: ['ingredient', 'bun'],
-			drop: item => {
-				dispatch(addIngredient(item.ingredient))
-			},
-			collect: monitor => ({
-				isHover: monitor.isOver(),
-			}),
-		}
-	)
+const [{ isHover }, drop] = useDrop(() => ({
+	accept: ['ingredient', 'bun'],
+	drop: (item: { ingredient: Ingredient }) => {
+		dispatch(addIngredient(item.ingredient))
+	},
+	collect: monitor => ({
+		isHover: monitor.isOver(),
+	}),
+}))
 
 	const handleOrderClick = () => {
 		if (!bun || ingredients.length === 0) return

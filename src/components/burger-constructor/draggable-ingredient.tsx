@@ -24,14 +24,13 @@ const DraggableIngredient: React.FC<DraggableIngredientProps> = ({
 	const dispatch = useAppDispatch()
 	const ref = React.useRef<HTMLDivElement>(null)
 
-	const [{ isDragging }, drag] = useDrag({
+	const [{ isDragging }, drag] = useDrag(() => ({
 		type: 'ingredient',
 		item: { index },
 		collect: monitor => ({
 			isDragging: monitor.isDragging(),
 		}),
-	})
-
+	}))
 	const [, drop] = useDrop({
 		accept: 'ingredient',
 		hover: (item: { index: number }, monitor) => {

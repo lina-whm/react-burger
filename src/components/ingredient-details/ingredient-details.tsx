@@ -1,10 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import styles from './ingredient-details.module.css';
-import { Ingredient, IngredientType } from '../utils/types';
+import React from 'react'
+import PropTypes from 'prop-types'
+import styles from './ingredient-details.module.css'
+import { Ingredient, IngredientType } from '../utils/types'
 
 interface IngredientDetailsProps {
-	ingredient: Ingredient;
+	ingredient: Ingredient
 }
 
 const IngredientDetails: React.FC<IngredientDetailsProps> = ({
@@ -55,11 +55,11 @@ const IngredientDetails: React.FC<IngredientDetailsProps> = ({
 				</div>
 			</div>
 		</div>
-	);
-};
+	)
+}
 
 IngredientDetails.propTypes = {
-	ingredient: PropTypes.shape({
+	ingredient: PropTypes.exact({
 		_id: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
 		type: PropTypes.oneOf(['bun', 'sauce', 'main'] as IngredientType[])
@@ -71,6 +71,6 @@ IngredientDetails.propTypes = {
 		fat: PropTypes.number.isRequired,
 		carbohydrates: PropTypes.number.isRequired,
 	}).isRequired,
-};
+}
 
-export default IngredientDetails;
+export default IngredientDetails

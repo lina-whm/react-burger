@@ -1,6 +1,5 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { request } from '../../components/utils/api'
-import type { RootState } from '../store/store'
 
 interface OrderState {
 	orderNumber: number | null
@@ -16,26 +15,15 @@ const initialState: OrderState = {
 
 export const createOrder = createAsyncThunk(
 	'order/createOrder',
-	async (ingredientIds: string[], { rejectWithValue }) => {
-		try {
-			const response = await request<{
-				success: boolean
-				name: string
-				order: { number: number }
-			}>('/orders', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: localStorage.getItem('accessToken') || '',
-				},
-				body: JSON.stringify({ ingredients: ingredientIds }),
-			})
-			return response.order.number
-		} catch (error) {
-			return rejectWithValue(
-				error instanceof Error ? error.message : 'Unknown error'
-			)
-		}
+	async (ingredients: string[]) => {
+		const response = await request<{ order: { number: number } }>('/orders', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ ingredients }),
+		})
+		return response.order.number
 	}
 )
 
@@ -60,7 +48,7 @@ const orderSlice = createSlice({
 			})
 			.addCase(createOrder.rejected, (state, action) => {
 				state.loading = false
-				state.error = action.payload as string
+				state.error = action.error.message || 'Ошибка оформления заказа'
 			})
 	},
 })

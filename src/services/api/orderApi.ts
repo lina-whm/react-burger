@@ -12,8 +12,7 @@ export const createOrder = (ingredientIds: string[]) => {
 	return request<OrderResponse>('/orders', {
 		method: 'POST',
 		headers: {
-			'Content-Type': 'application/json',
-			Authorization: localStorage.getItem('accessToken') || '',
+			'Content-Type': 'application/json', 
 		},
 		body: JSON.stringify({ ingredients: ingredientIds }),
 	})

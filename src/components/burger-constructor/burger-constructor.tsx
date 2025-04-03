@@ -9,22 +9,15 @@ import { useAppSelector, useAppDispatch } from '../../services/hooks'
 import {
 	addIngredient,
 	clearConstructor,
+	moveIngredient,
 } from '../../services/slices/constructorSlice'
 import { createOrder } from '../../services/slices/orderSlice'
 import DraggableIngredient from './draggable-ingredient'
-import OrderDetails from '../order-details/order-details'
 import Modal from '../modal/modal'
+import OrderDetails from '../order-details/order-details'
 import styles from './burger-constructor.module.css'
 import classNames from 'classnames'
-import { Ingredient } from '../../components/utils/types'
-
-interface DropCollectedProps {
-	isHover: boolean
-}
-
-interface DraggedItem {
-	ingredient: Ingredient
-}
+import { ConstructorIngredient } from '../../components/utils/types'
 
 const BurgerConstructor: React.FC = () => {
 	const dispatch = useAppDispatch()
@@ -32,39 +25,45 @@ const BurgerConstructor: React.FC = () => {
 	const { orderNumber, loading } = useAppSelector(state => state.order)
 	const [isOrderModalOpen, setIsOrderModalOpen] = React.useState(false)
 
-const [{ isHover }, drop] = useDrop(() => ({
-	accept: ['ingredient', 'bun'],
-	drop: (item: { ingredient: Ingredient }) => {
-		dispatch(addIngredient(item.ingredient))
-	},
-	collect: monitor => ({
-		isHover: monitor.isOver(),
-	}),
-}))
+	const [{ isHover }, drop] = useDrop(() => ({
+		accept: ['ingredient', 'bun'],
+		drop: (item: { ingredient: ConstructorIngredient }) => {
+			dispatch(addIngredient(item.ingredient))
+		},
+		collect: monitor => ({
+			isHover: monitor.isOver(),
+		}),
+	}))
 
-	const handleOrderClick = () => {
-		if (!bun || ingredients.length === 0) return
+const handleOrderClick = async () => {
+	if (!bun || ingredients.length === 0) return
 
+	try {
+		// Фильтруем null/undefined
 		const ingredientIds = [
 			bun._id,
-			...ingredients.map(item => item._id),
+			...ingredients
+				.map(item => item?._id) // только _id
+				.filter(id => id != null), // удалила null/undefined
 			bun._id,
-		]
+		].filter(Boolean) // доп фильтрация
 
-		dispatch(createOrder(ingredientIds))
-			.unwrap()
-			.then(() => {
-				setIsOrderModalOpen(true)
-				dispatch(clearConstructor())
-			})
-			.catch(error => {
-				console.error('Ошибка оформления заказа:', error)
-			})
+		await dispatch(createOrder(ingredientIds)).unwrap()
+		setIsOrderModalOpen(true)
+		dispatch(clearConstructor())
+	} catch (error) {
+		console.error('Ошибка оформления заказа:', error)
+	}
+}
+
+	const moveCard = (dragIndex: number, hoverIndex: number) => {
+		if (dragIndex === hoverIndex) return
+		dispatch(moveIngredient({ dragIndex, hoverIndex }))
 	}
 
 	const totalPrice = React.useMemo(() => {
 		const ingredientsSum = ingredients.reduce(
-			(sum, item) => sum + item.price,
+			(sum, item) => sum + (item?.price || 0),
 			0
 		)
 		const bunSum = bun ? bun.price * 2 : 0
@@ -101,19 +100,20 @@ const [{ isHover }, drop] = useDrop(() => ({
 
 			{/* Список ингредиентов */}
 			<div
-				className={classNames(styles.ingredientsList, {
-					[styles.withScroll]: ingredients.length > 4,
-				})}
+				className={styles.ingredientsList}
+				style={{ maxHeight: ingredients.length > 4 ? '464px' : 'auto' }}
 			>
-				{ingredients.length > 0 ? (
-					ingredients.map((item, index) => (
+				{ingredients
+					.filter(ing => ing && ing._id) // Фильтруем пустые ингредиенты
+					.map((item, index) => (
 						<DraggableIngredient
 							key={item.uniqueId}
 							ingredient={item}
 							index={index}
+							moveCard={moveCard}
 						/>
-					))
-				) : (
+					))}
+				{ingredients.length === 0 && (
 					<div
 						className={classNames(
 							styles.placeholder,

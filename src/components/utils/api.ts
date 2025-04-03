@@ -1,6 +1,6 @@
 const API_BASE = 'https://norma.nomoreparties.space/api'
 
-function checkResponse(res: Response) {
+export function checkResponse(res: Response) {
 	if (!res.ok) {
 		return Promise.reject(`Ошибка ${res.status}`)
 	}

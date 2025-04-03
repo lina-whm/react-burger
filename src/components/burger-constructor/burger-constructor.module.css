@@ -21,7 +21,9 @@
   flex-direction: column;
   gap: 16px;
   padding: 0 8px;
-  overflow-y: hidden; 
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #8585ad #2f2f37;
 }
 
 .placeholder {
@@ -105,4 +107,17 @@
 
 .draggableItem .ConstructorElement {
   border-radius: 40px !important;
+}
+.ingredientsList::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ingredientsList::-webkit-scrollbar-track {
+  background: #2f2f37;
+}
+
+.ingredientsList::-webkit-scrollbar-thumb {
+  background-color: #8585ad;
+  border-radius: 6px;
+  border: 3px solid #2f2f37;
 }

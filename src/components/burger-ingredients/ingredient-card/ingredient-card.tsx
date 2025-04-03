@@ -2,7 +2,6 @@ import React from 'react'
 import { useDrag } from 'react-dnd'
 import { CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components'
 import { useAppSelector } from '../../../services/hooks/useAppSelector'
-import { RootState } from '../../../services/store/store'
 import styles from './ingredient-card.module.css'
 import { Ingredient } from '../../utils/types'
 
@@ -16,7 +15,7 @@ const IngredientCard: React.FC<IngredientCardProps> = ({
 	onIngredientClick,
 }) => {
 	const { ingredients = [], bun } = useAppSelector(
-		(state: RootState) => state.burgerConstructor
+		state => state.burgerConstructor
 	)
 
 	const [{ isDragging }, drag] = useDrag(() => ({

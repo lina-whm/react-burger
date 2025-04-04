@@ -7,15 +7,14 @@
 }
 
 .orderNumber {
-  margin-bottom: 32px;
+  margin-bottom: 32px; 
   text-shadow: 0px 0px 16px rgba(51, 51, 255, 0.5), 0px 0px 8px rgba(51, 51, 255, 0.5),
-    0px 4px 32px rgba(51, 51, 255, 0.5);
+    0px 4px 32px rgba(51, 51, 255, 0.5); 
 }
 
 .orderId {
-  margin-bottom: 60px;
+  margin-bottom: 60px; 
 }
-
 
 .checkmark {
   display: flex;
@@ -25,19 +24,19 @@
   height: 120px;
   background: linear-gradient(63.18deg, #801ab3 0%, #4c4cff 100%);
   border-radius: 50%;
-  margin-bottom: 60px;
+  margin-top: 60px;
 }
 
 .checkmark svg {
   width: 48px;
   height: 48px;
-  stroke-width: 2; 
 }
 
 .status {
-  margin-bottom: 8px;
+  margin-bottom: 8px; 
 }
 
 .waiting {
-  margin-bottom: 60px;
+  margin-bottom: 60px; 
+  color: #8585ad; 
 }

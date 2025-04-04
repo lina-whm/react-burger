@@ -2,15 +2,48 @@
   position: relative;
   text-align: center;
   cursor: pointer;
+  padding: 16px; 
+  min-height: 200px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.image {
-  width: 100%;
+.count {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #4c4cff;
+  color: white;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  z-index: 1;
 }
+
 
 .price {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 8px;
+  gap: 8px; 
+  font-size: 20px; 
+  margin: 8px 0;
+}
+
+.name {
+  font-size: 16px;
+  line-height: 1.2;
+  margin: 0;
+  padding: 0 8px; 
+  display: -webkit-box;
+  -webkit-line-clamp: 2; 
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-clamp: 2;
 }

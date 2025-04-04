@@ -1,54 +1,27 @@
-import React from 'react'
-import { CheckMarkIcon } from '@ya.praktikum/react-developer-burger-ui-components'
-import classNames from 'classnames' 
-import styles from './order-details.module.css'
+import React from 'react';
+import { CheckMarkIcon } from '@ya.praktikum/react-developer-burger-ui-components';
+import styles from './order-details.module.css';
 
-const OrderDetails = () => {
+interface OrderDetailsProps {
+	orderNumber: number
+}
+
+const OrderDetails: React.FC<OrderDetailsProps> = ({ orderNumber }) => {
 	return (
-		<div className={classNames(styles.details)}>
-			{/* Номер заказа */}
-			<h2
-				className={classNames(
-					'text',
-					'text_type_digits-large',
-					styles.orderNumber
-				)}
-			>
-				034536
-			</h2>
-
-			{/* Идентификатор заказа */}
-			<p
-				className={classNames('text', 'text_type_main-medium', styles.orderId)}
-			>
-				идентификатор заказа
-			</p>
-
-			{/* Галочка */}
-			<div className={classNames(styles.checkmark)}>
+		<div className={styles.details}>
+			<h2 className='text text_type_digits-large'>{orderNumber}</h2>
+			<p className='text text_type_main-medium mt-8'>идентификатор заказа</p>
+			<div className={styles.checkmark}>
 				<CheckMarkIcon type='primary' />
 			</div>
-
-			{/* Статус заказа */}
-			<p
-				className={classNames('text', 'text_type_main-default', styles.status)}
-			>
+			<p className='text text_type_main-default mt-15'>
 				Ваш заказ начали готовить
 			</p>
-
-			{/* Сообщение о готовности */}
-			<p
-				className={classNames(
-					'text',
-					'text_type_main-default',
-					'text_color_inactive',
-					styles.waiting
-				)}
-			>
+			<p className='text text_type_main-default text_color_inactive mt-2'>
 				Дождитесь готовности на орбитальной станции
 			</p>
 		</div>
-	)
-}
+	);
+};
 
-export default OrderDetails
+export default OrderDetails;

@@ -1,117 +1,175 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { useDrop } from 'react-dnd'
 import {
 	ConstructorElement,
 	Button,
 	CurrencyIcon,
 } from '@ya.praktikum/react-developer-burger-ui-components'
-import classNames from 'classnames' 
+import { useAppSelector, useAppDispatch } from '../../services/hooks'
+import {
+	addIngredient,
+	clearConstructor,
+	moveIngredient,
+} from '../../services/slices/constructorSlice'
+import { createOrder } from '../../services/slices/orderSlice'
+import DraggableIngredient from './draggable-ingredient'
 import Modal from '../modal/modal'
 import OrderDetails from '../order-details/order-details'
 import styles from './burger-constructor.module.css'
+import classNames from 'classnames'
+import { ConstructorIngredient } from '../../components/utils/types'
 
-interface Ingredient {
-	_id: string
-	name: string
-	type: string
-	price: number
-	image: string
-}
+const BurgerConstructor: React.FC = () => {
+	const dispatch = useAppDispatch()
+	const { bun, ingredients } = useAppSelector(state => state.burgerConstructor)
+	const { orderNumber, loading } = useAppSelector(state => state.order)
+	const [isOrderModalOpen, setIsOrderModalOpen] = React.useState(false)
 
-interface BurgerConstructorProps {
-	selectedIngredients: Ingredient[]
-}
+	const [{ isHover }, drop] = useDrop(() => ({
+		accept: ['ingredient', 'bun'],
+		drop: (item: { ingredient: ConstructorIngredient }) => {
+			dispatch(addIngredient(item.ingredient))
+		},
+		collect: monitor => ({
+			isHover: monitor.isOver(),
+		}),
+	}))
 
-const BurgerConstructor: React.FC<BurgerConstructorProps> = ({
-	selectedIngredients,
-}) => {
-	const [isOrderModalOpen, setIsOrderModalOpen] = useState(false)
+const handleOrderClick = async () => {
+	if (!bun || ingredients.length === 0) return
 
-	const buns = selectedIngredients.filter(
-		ingredient => ingredient.type === 'bun'
-	)
-	const otherIngredients = selectedIngredients.filter(
-		ingredient => ingredient.type !== 'bun'
-	)
+	try {
+		// Фильтруем null/undefined
+		const ingredientIds = [
+			bun._id,
+			...ingredients
+				.map(item => item?._id) // только _id
+				.filter(id => id != null), // удалила null/undefined
+			bun._id,
+		].filter(Boolean) // доп фильтрация
 
-	const totalPrice = selectedIngredients.reduce(
-		(sum, ingredient) => sum + ingredient.price,
-		0
-	)
-
-	const handleOrderClick = () => {
+		await dispatch(createOrder(ingredientIds)).unwrap()
 		setIsOrderModalOpen(true)
+		dispatch(clearConstructor())
+	} catch (error) {
+		console.error('Ошибка оформления заказа:', error)
+	}
+}
+
+	const moveCard = (dragIndex: number, hoverIndex: number) => {
+		if (dragIndex === hoverIndex) return
+		dispatch(moveIngredient({ dragIndex, hoverIndex }))
 	}
 
-	const closeModal = () => {
-		setIsOrderModalOpen(false)
-	}
+	const totalPrice = React.useMemo(() => {
+		const ingredientsSum = ingredients.reduce(
+			(sum, item) => sum + (item?.price || 0),
+			0
+		)
+		const bunSum = bun ? bun.price * 2 : 0
+		return ingredientsSum + bunSum
+	}, [bun, ingredients])
 
 	return (
-		<section className={classNames(styles.constructor)}>
+		<div
+			ref={drop}
+			className={classNames(styles.constructor, { [styles.hover]: isHover })}
+			data-testid='burger-constructor'
+		>
 			{/* Верхняя булка */}
-			{buns.length > 0 && (
-				<div className={classNames(styles.bun, styles.bunTop)}>
+			<div className={classNames(styles.bunSection, styles.top)}>
+				{bun ? (
 					<ConstructorElement
 						type='top'
 						isLocked={true}
-						text={`${buns[0].name} (верх)`}
-						price={buns[0].price}
-						thumbnail={buns[0].image}
+						text={`${bun.name} (верх)`}
+						price={bun.price}
+						thumbnail={bun.image}
 					/>
-				</div>
-			)}
+				) : (
+					<div
+						className={classNames(
+							styles.placeholder,
+							'text text_type_main-default'
+						)}
+					>
+						Перетащите булку (верх)
+					</div>
+				)}
+			</div>
 
 			{/* Список ингредиентов */}
-			<div className={classNames(styles.ingredientsList)}>
-				{otherIngredients.map((ingredient, index) => (
-					<div key={index} className={classNames(styles.ingredientItem)}>
-						<ConstructorElement
-							text={ingredient.name}
-							price={ingredient.price}
-							thumbnail={ingredient.image}
+			<div
+				className={styles.ingredientsList}
+				style={{ maxHeight: ingredients.length > 4 ? '464px' : 'auto' }}
+			>
+				{ingredients
+					.filter(ing => ing && ing._id) // Фильтруем пустые ингредиенты
+					.map((item, index) => (
+						<DraggableIngredient
+							key={item.uniqueId}
+							ingredient={item}
+							index={index}
+							moveCard={moveCard}
 						/>
+					))}
+				{ingredients.length === 0 && (
+					<div
+						className={classNames(
+							styles.placeholder,
+							'text text_type_main-default'
+						)}
+					>
+						Перетащите начинку
 					</div>
-				))}
+				)}
 			</div>
 
 			{/* Нижняя булка */}
-			{buns.length > 0 && (
-				<div className={classNames(styles.bun)}>
+			<div className={classNames(styles.bunSection, styles.bottom)}>
+				{bun ? (
 					<ConstructorElement
 						type='bottom'
 						isLocked={true}
-						text={`${buns[0].name} (низ)`}
-						price={buns[0].price}
-						thumbnail={buns[0].image}
+						text={`${bun.name} (низ)`}
+						price={bun.price}
+						thumbnail={bun.image}
 					/>
-				</div>
-			)}
+				) : (
+					<div
+						className={classNames(
+							styles.placeholder,
+							'text text_type_main-default'
+						)}
+					>
+						Перетащите булку (низ)
+					</div>
+				)}
+			</div>
 
-			{/* Итоговая стоимость и кнопка */}
-			<div className={classNames(styles.total)}>
-				<div className={classNames(styles.totalPrice)}>
-					<span className={classNames('text', 'text_type_digits-medium')}>
-						{totalPrice}
-					</span>
+			{/* Итого */}
+			<div className={styles.total}>
+				<div className={styles.totalPrice}>
+					<span className='text text_type_digits-medium'>{totalPrice}</span>
 					<CurrencyIcon type='primary' />
 				</div>
 				<Button
+					htmlType='button'
 					type='primary'
 					size='large'
-					htmlType='button'
 					onClick={handleOrderClick}
+					disabled={!bun || ingredients.length === 0 || loading}
 				>
-					Оформить заказ
+					{loading ? 'Оформляем...' : 'Оформить заказ'}
 				</Button>
 			</div>
 
-			{/* Модальное окно с деталями заказа */}
-			{isOrderModalOpen && (
-				<Modal onClose={closeModal}>
-					<OrderDetails />
+			{isOrderModalOpen && orderNumber && (
+				<Modal onClose={() => setIsOrderModalOpen(false)}>
+					<OrderDetails orderNumber={orderNumber} />
 				</Modal>
 			)}
-		</section>
+		</div>
 	)
 }
 

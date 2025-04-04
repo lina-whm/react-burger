@@ -1,0 +1,9 @@
+.draggableItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1C1C21;
+  border-radius: 40px; 
+  padding: 8px; 
+  cursor: move; 
+}

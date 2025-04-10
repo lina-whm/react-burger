@@ -4,11 +4,9 @@ import { Tab } from '@ya.praktikum/react-developer-burger-ui-components'
 import IngredientCard from './ingredient-card/ingredient-card'
 import styles from './burger-ingredients.module.css'
 import { RootState } from '../../services/store/store'
-import Modal from '../modal/modal'
-import IngredientDetails from '../ingredient-details/ingredient-details'
-import { Ingredient } from '../utils/types'
-import { fetchIngredients } from '../../services/slices/ingredientsSlice'
+import { Ingredient } from '../../components/utils/types'
 import { useAppDispatch } from '../../services/hooks/useAppDispatch'
+import { fetchIngredients } from '../../services/slices/ingredientsSlice'
 
 interface BurgerIngredientsProps {
 	onIngredientClick: (ingredient: Ingredient) => void
@@ -20,10 +18,8 @@ const BurgerIngredients: React.FC<BurgerIngredientsProps> = ({
 	const dispatch = useAppDispatch()
 	const { items, loading, error } = useSelector(
 		(state: RootState) => state.ingredients
-	);
+	)
 	const [currentTab, setCurrentTab] = useState<'bun' | 'sauce' | 'main'>('bun')
-	const [selectedIngredient, setSelectedIngredient] =
-		useState<Ingredient | null>(null)
 
 	const bunRef = useRef<HTMLDivElement>(null)
 	const sauceRef = useRef<HTMLDivElement>(null)
@@ -74,101 +70,91 @@ const BurgerIngredients: React.FC<BurgerIngredientsProps> = ({
 		}
 	}
 
-	const handleIngredientClick = (ingredient: Ingredient) => {
-		setSelectedIngredient(ingredient)
-		onIngredientClick(ingredient)
-	}
-
-	const handleCloseModal = () => {
-		setSelectedIngredient(null)
-	}
-
 	const buns = items.filter(item => item.type === 'bun')
 	const sauces = items.filter(item => item.type === 'sauce')
 	const mains = items.filter(item => item.type === 'main')
 
-	if (loading) return <p>Загрузка...</p>
-	if (error) return <p>Ошибка: {error}</p>
+	if (loading)
+		return (
+			<p className='text text_type_main-default'>Загрузка ингредиентов...</p>
+		)
+	if (error)
+		return <p className='text text_type_main-default'>Ошибка: {error}</p>
+	if (items.length === 0)
+		return (
+			<p className='text text_type_main-default'>Нет доступных ингредиентов</p>
+		)
 
 	return (
 		<section className={styles.ingredients}>
 			<h1 className='text text_type_main-large mt-10 mb-5'>Соберите бургер</h1>
 
-			{/* Табы для переключения категорий */}
 			<div className={styles.tabs}>
 				<Tab
 					value='bun'
 					active={currentTab === 'bun'}
-					onClick={() => handleTabClick('bun')}>
+					onClick={() => handleTabClick('bun')}
+				>
 					Булки
 				</Tab>
 				<Tab
 					value='sauce'
 					active={currentTab === 'sauce'}
-					onClick={() => handleTabClick('sauce')}>
+					onClick={() => handleTabClick('sauce')}
+				>
 					Соусы
 				</Tab>
 				<Tab
 					value='main'
 					active={currentTab === 'main'}
-					onClick={() => handleTabClick('main')}>
+					onClick={() => handleTabClick('main')}
+				>
 					Начинки
 				</Tab>
 			</div>
 
-			{/* Единый контейнер для скролла */}
 			<div className={styles.scrollContainer}>
-				{/* Секция булок */}
 				<div className={styles.category} id='buns' ref={bunRef}>
 					<h2 className='text text_type_main-medium mb-6'>Булки</h2>
 					<div className={styles.items}>
-						{buns.map((ingredient) => (
+						{buns.map(ingredient => (
 							<IngredientCard
 								key={ingredient._id}
 								ingredient={ingredient}
-								onIngredientClick={() => handleIngredientClick(ingredient)}
+								onIngredientClick={onIngredientClick}
 							/>
 						))}
 					</div>
 				</div>
 
-				{/* Секция соусов */}
 				<div className={styles.category} id='sauces' ref={sauceRef}>
 					<h2 className='text text_type_main-medium mb-6'>Соусы</h2>
 					<div className={styles.items}>
-						{sauces.map((ingredient) => (
+						{sauces.map(ingredient => (
 							<IngredientCard
 								key={ingredient._id}
 								ingredient={ingredient}
-								onIngredientClick={() => handleIngredientClick(ingredient)}
+								onIngredientClick={onIngredientClick}
 							/>
 						))}
 					</div>
 				</div>
 
-				{/* Секция начинок */}
 				<div className={styles.category} id='mains' ref={mainRef}>
 					<h2 className='text text_type_main-medium mb-6'>Начинки</h2>
 					<div className={styles.items}>
-						{mains.map((ingredient: Ingredient) => (
+						{mains.map(ingredient => (
 							<IngredientCard
 								key={ingredient._id}
 								ingredient={ingredient}
-								onIngredientClick={() => handleIngredientClick(ingredient)}
+								onIngredientClick={onIngredientClick}
 							/>
 						))}
 					</div>
 				</div>
 			</div>
-
-			{/* Модальное окно с деталями ингредиента */}
-			{selectedIngredient && (
-				<Modal onClose={handleCloseModal}>
-					<IngredientDetails ingredient={selectedIngredient} />
-				</Modal>
-			)}
 		</section>
-	);
+	)
 }
 
 export default BurgerIngredients

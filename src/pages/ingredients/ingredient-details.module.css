@@ -1,0 +1,34 @@
+.container {
+  max-width: 640px;
+  margin: 120px auto;
+  text-align: center;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px;
+}
+
+.image {
+  width: 240px;
+  height: 120px;
+  object-fit: cover;
+}
+
+.nutrition {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.nutritionItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+}

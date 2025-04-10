@@ -7,7 +7,7 @@ import { Ingredient } from '../../utils/types'
 
 interface IngredientCardProps {
 	ingredient: Ingredient
-	onIngredientClick: () => void
+	onIngredientClick: (ingredient: Ingredient) => void
 }
 
 const IngredientCard: React.FC<IngredientCardProps> = ({
@@ -36,20 +36,26 @@ const IngredientCard: React.FC<IngredientCardProps> = ({
 	return (
 		<div
 			ref={drag}
-			className={styles.card}
-			onClick={onIngredientClick}
+			className={`${styles.card} mb-8`}
+			onClick={() => onIngredientClick(ingredient)}
 			style={{ opacity: isDragging ? 0.5 : 1 }}
 			data-testid='ingredient-card'
 		>
 			{count > 0 && <div className={styles.count}>{count}</div>}
-			<img src={ingredient.image} alt={ingredient.name} />
-			<div className={styles.price}>
-				<span className='text text_type_digits-default'>
+			<img
+				src={ingredient.image}
+				alt={ingredient.name}
+				className={styles.image}
+			/>
+			<div className={`${styles.price} mt-1 mb-1`}>
+				<span className='text text_type_digits-default mr-2'>
 					{ingredient.price}
 				</span>
 				<CurrencyIcon type='primary' />
 			</div>
-			<p className='text text_type_main-default'>{ingredient.name}</p>
+			<p className={`text text_type_main-default ${styles.name}`}>
+				{ingredient.name}
+			</p>
 		</div>
 	)
 }

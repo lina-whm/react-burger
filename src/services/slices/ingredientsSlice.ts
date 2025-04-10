@@ -1,6 +1,6 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { request } from '../../components/utils/api'
-import { Ingredient } from '../../components/utils/types'
+import { Ingredient } from '../../components/utils/types' 
 
 interface IngredientsState {
 	items: Ingredient[]
@@ -16,9 +16,13 @@ const initialState: IngredientsState = {
 
 export const fetchIngredients = createAsyncThunk(
 	'ingredients/fetchIngredients',
-	async () => {
-		const response = await request<{ data: Ingredient[] }>('/ingredients')
-		return response.data
+	async (_, { rejectWithValue }) => {
+		try {
+			const response = await request<{ data: Ingredient[] }>('/ingredients')
+			return response.data
+		} catch (error) {
+			return rejectWithValue('Ошибка загрузки ингредиентов')
+		}
 	}
 )
 
@@ -38,7 +42,7 @@ const ingredientsSlice = createSlice({
 			})
 			.addCase(fetchIngredients.rejected, (state, action) => {
 				state.loading = false
-				state.error = action.error.message || 'Ошибка загрузки'
+				state.error = action.payload as string
 			})
 	},
 })

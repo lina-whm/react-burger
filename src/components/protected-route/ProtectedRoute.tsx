@@ -13,7 +13,19 @@ const ProtectedRoute: FC<{ children: JSX.Element }> = ({ children }) => {
 	}, [dispatch])
 
 	if (isLoading) {
-		return <div>Загрузка...</div>
+		return (
+			<div
+				style={{
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					height: '100vh',
+					fontSize: '24px',
+				}}
+			>
+				Загрузка...
+			</div>
+		)
 	}
 
 	if (!isAuth) {

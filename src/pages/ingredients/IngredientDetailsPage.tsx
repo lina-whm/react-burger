@@ -16,27 +16,35 @@ const IngredientDetailsPage = () => {
 	const ingredient = ingredients.find(item => item._id === id)
 
 	useEffect(() => {
-		
 		if (ingredients.length === 0) {
 			dispatch(fetchIngredients())
 		}
 	}, [dispatch, ingredients.length])
 
 	useEffect(() => {
-		
 		if (!loading && ingredients.length > 0 && !ingredient) {
 			navigate('/404', { replace: true })
 		}
 	}, [ingredient, loading, ingredients.length, navigate])
 
 	if (loading || !ingredient) {
-		return <div className={styles.loading}>Загрузка...</div>
+		return (
+			<div
+				style={{
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					height: '100vh',
+					fontSize: '24px',
+				}}
+			>
+				Загрузка...
+			</div>
+		)
 	}
 
 	return (
-		<div
-			style={{ maxWidth: '640px', margin: '120px auto', textAlign: 'center' }}
-		>
+		<div className={styles.container}>
 			<h1 className='text text_type_main-large mt-10 mb-5'>
 				Детали ингредиента
 			</h1>

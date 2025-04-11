@@ -1,5 +1,6 @@
 import React from 'react'
 import { useDrop } from 'react-dnd'
+import { useNavigate } from 'react-router-dom'
 import {
 	ConstructorElement,
 	Button,
@@ -21,8 +22,10 @@ import { ConstructorIngredient } from '../../components/utils/types'
 
 const BurgerConstructor: React.FC = () => {
 	const dispatch = useAppDispatch()
+	const navigate = useNavigate()
 	const { bun, ingredients } = useAppSelector(state => state.burgerConstructor)
 	const { orderNumber, loading } = useAppSelector(state => state.order)
+	const { isAuth } = useAppSelector(state => state.auth)
 	const [isOrderModalOpen, setIsOrderModalOpen] = React.useState(false)
 
 	const [{ isHover }, drop] = useDrop(() => ({
@@ -35,27 +38,28 @@ const BurgerConstructor: React.FC = () => {
 		}),
 	}))
 
-const handleOrderClick = async () => {
-	if (!bun || ingredients.length === 0) return
+	const handleOrderClick = async () => {
+		if (!isAuth) {
+			navigate('/login', { state: { from: '/' } })
+			return
+		}
 
-	try {
-		// Фильтруем null/undefined
-		const ingredientIds = [
-			bun._id,
-			...ingredients
-				.map(item => item?._id) // только _id
-				.filter(id => id != null), // удалила null/undefined
-			bun._id,
-		].filter(Boolean) // доп фильтрация
+		if (!bun || ingredients.length === 0) return
 
-		await dispatch(createOrder(ingredientIds)).unwrap()
-		setIsOrderModalOpen(true)
-		dispatch(clearConstructor())
-	} catch (error) {
-		console.error('Ошибка оформления заказа:', error)
+		try {
+			const ingredientIds = [
+				bun._id,
+				...ingredients.map(item => item?._id).filter(id => id != null),
+				bun._id,
+			].filter(Boolean)
+
+			await dispatch(createOrder(ingredientIds)).unwrap()
+			setIsOrderModalOpen(true)
+			dispatch(clearConstructor())
+		} catch (error) {
+			console.error('Ошибка оформления заказа:', error)
+		}
 	}
-}
-
 	const moveCard = (dragIndex: number, hoverIndex: number) => {
 		if (dragIndex === hoverIndex) return
 		dispatch(moveIngredient({ dragIndex, hoverIndex }))
@@ -104,7 +108,7 @@ const handleOrderClick = async () => {
 				style={{ maxHeight: ingredients.length > 4 ? '464px' : 'auto' }}
 			>
 				{ingredients
-					.filter(ing => ing && ing._id) // Фильтруем пустые ингредиенты
+					.filter(ing => ing && ing._id)
 					.map((item, index) => (
 						<DraggableIngredient
 							key={item.uniqueId}

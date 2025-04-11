@@ -1,4 +1,5 @@
 import { request } from '../../components/utils/api'
+import { getCookie } from '../../services/utils/cookies'
 
 export interface OrderResponse {
 	success: boolean
@@ -9,10 +10,12 @@ export interface OrderResponse {
 }
 
 export const createOrder = (ingredientIds: string[]) => {
+	const accessToken = getCookie('accessToken')
 	return request<OrderResponse>('/orders', {
 		method: 'POST',
 		headers: {
-			'Content-Type': 'application/json', 
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${accessToken}`,
 		},
 		body: JSON.stringify({ ingredients: ingredientIds }),
 	})

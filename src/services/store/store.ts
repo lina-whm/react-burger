@@ -3,9 +3,12 @@ import constructorReducer from '../slices/constructorSlice'
 import ingredientsReducer from '../slices/ingredientsSlice'
 import orderReducer from '../slices/orderSlice'
 import ingredientDetailsReducer from '../slices/ingredientDetailsSlice'
+import authReducer from '../slices/authSlice'
+import { refreshTokenMiddleware } from './refreshTokenMiddleware'
 
 export const store = configureStore({
 	reducer: {
+		auth: authReducer,
 		burgerConstructor: constructorReducer,
 		ingredients: ingredientsReducer,
 		order: orderReducer,
@@ -23,8 +26,8 @@ export const store = configureStore({
 					'ingredients.items',
 				],
 			},
-		}),
+		}).concat(refreshTokenMiddleware),
 })
 
-export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
+export type RootState = ReturnType<typeof store.getState>

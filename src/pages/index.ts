@@ -1,0 +1,7 @@
+export { default as LoginPage } from './login/LoginPage'
+export { default as RegisterPage } from './register/RegisterPage'
+export { default as ForgotPasswordPage } from './forgot-password/ForgotPasswordPage'
+export { default as ResetPasswordPage } from './reset-password/ResetPasswordPage'
+export { default as ProfilePage } from './profile/ProfilePage'
+export { default as IngredientDetailsPage } from './ingredients/IngredientDetailsPage'
+export { default as NotFoundPage } from './NotFoundPage'

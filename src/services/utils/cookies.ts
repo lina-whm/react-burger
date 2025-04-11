@@ -2,7 +2,7 @@ export const setCookie = (
 	name: string,
 	value: string,
 	expiresInSeconds?: number
-) => {
+): void => {
 	let expires = ''
 	if (expiresInSeconds) {
 		const date = new Date()
@@ -12,7 +12,7 @@ export const setCookie = (
 	document.cookie = name + '=' + (value || '') + expires + '; path=/'
 }
 
-export const getCookie = (name: string) => {
+export const getCookie = (name: string): string | null => {
 	const nameEQ = name + '='
 	const ca = document.cookie.split(';')
 	for (let i = 0; i < ca.length; i++) {
@@ -23,6 +23,6 @@ export const getCookie = (name: string) => {
 	return null
 }
 
-export const deleteCookie = (name: string) => {
+export const deleteCookie = (name: string): void => {
 	document.cookie = name + '=; Max-Age=-99999999; path=/'
 }

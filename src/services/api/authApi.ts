@@ -13,7 +13,7 @@ interface IAuthResponse {
 	user: IUser
 }
 
-interface IResetPasswordResponse {
+interface IMessageResponse {
 	success: boolean
 	message: string
 }
@@ -39,7 +39,7 @@ export const login = (data: { email: string; password: string }) => {
 }
 
 export const logout = (token: string) => {
-	return request<IResetPasswordResponse>('/auth/logout', {
+	return request<IMessageResponse>('/auth/logout', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ token }),
@@ -47,11 +47,7 @@ export const logout = (token: string) => {
 }
 
 export const refreshToken = (token: string) => {
-	return request<{
-		success: boolean
-		accessToken: string
-		refreshToken: string
-	}>('/auth/token', {
+	return request<IAuthResponse>('/auth/token', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ token }),
@@ -84,7 +80,7 @@ export const updateUser = (data: {
 }
 
 export const forgotPassword = (email: string) => {
-	return request<IResetPasswordResponse>('/password-reset', {
+	return request<IMessageResponse>('/password-reset', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ email }),
@@ -92,7 +88,7 @@ export const forgotPassword = (email: string) => {
 }
 
 export const resetPassword = (data: { password: string; token: string }) => {
-	return request<IResetPasswordResponse>('/password-reset/reset', {
+	return request<IMessageResponse>('/password-reset/reset', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(data),

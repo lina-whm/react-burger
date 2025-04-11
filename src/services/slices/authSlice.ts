@@ -56,7 +56,7 @@ export const loginUser = createAsyncThunk(
 	async (data: { email: string; password: string }, { rejectWithValue }) => {
 		try {
 			const res = await apiLogin(data)
-			setCookie('accessToken', res.accessToken.split('Bearer ')[1], 20 * 60) 
+			setCookie('accessToken', res.accessToken.split('Bearer ')[1], 20 * 60)
 			localStorage.setItem('refreshToken', res.refreshToken)
 			return res.user
 		} catch (error: any) {
@@ -96,7 +96,7 @@ export const checkUserAuth = createAsyncThunk(
 				'accessToken',
 				tokenData.accessToken.split('Bearer ')[1],
 				20 * 60
-			) 
+			)
 			localStorage.setItem('refreshToken', tokenData.refreshToken)
 
 			const userData = await dispatch(fetchUser()).unwrap()

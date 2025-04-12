@@ -1,6 +1,6 @@
-import React from 'react';
-import { CheckMarkIcon } from '@ya.praktikum/react-developer-burger-ui-components';
-import styles from './order-details.module.css';
+import React from 'react'
+import { CheckMarkIcon } from '@ya.praktikum/react-developer-burger-ui-components'
+import styles from './order-details.module.css'
 
 interface OrderDetailsProps {
 	orderNumber: number
@@ -21,7 +21,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ orderNumber }) => {
 				Дождитесь готовности на орбитальной станции
 			</p>
 		</div>
-	);
-};
+	)
+}
 
-export default OrderDetails;
+export default OrderDetails

@@ -18,3 +18,16 @@ export interface Ingredient {
 export interface ConstructorIngredient extends Ingredient {
 	uniqueId: string
 }
+
+export interface Order {
+	number: number
+	ingredients: string[]
+	status: 'created' | 'pending' | 'done'
+	createdAt: string
+	updatedAt: string
+}
+
+export interface IUser {
+	email: string
+	name: string
+}

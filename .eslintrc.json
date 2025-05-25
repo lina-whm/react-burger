@@ -21,9 +21,13 @@
 	"settings": {
 		"react": {
 			"version": "detect"
+		},
+		"cSpell": {
+			"enabled": false 
 		}
 	},
 	"rules": {
+		"no-mixed-spaces-and-tabs": "off",
 		"react/react-in-jsx-scope": "off",
 		"@typescript-eslint/no-empty-function": "off",
 		"@typescript-eslint/no-unused-vars": [
@@ -33,6 +37,7 @@
 				"varsIgnorePattern": "^_",
 				"caughtErrorsIgnorePattern": "^_"
 			}
-		]
+		],
+		"cspell/spell-checker": "off"
 	}
 }

@@ -19,6 +19,7 @@ import OrderDetails from '../order-details/order-details'
 import styles from './burger-constructor.module.css'
 import classNames from 'classnames'
 import { ConstructorIngredient } from '../../components/utils/types'
+import { updateTokens } from '../../services/slices/authSlice'
 
 const BurgerConstructor: React.FC = () => {
 	const dispatch = useAppDispatch()
@@ -39,6 +40,7 @@ const BurgerConstructor: React.FC = () => {
 	}))
 
 	const handleOrderClick = async () => {
+		
 		if (!isAuth) {
 			navigate('/login', { state: { from: '/' } })
 			return
@@ -49,15 +51,66 @@ const BurgerConstructor: React.FC = () => {
 		try {
 			const ingredientIds = [
 				bun._id,
-				...ingredients.map(item => item?._id).filter(id => id != null),
+				...ingredients.map(item => item._id),
 				bun._id,
-			].filter(Boolean)
+			]
 
-			await dispatch(createOrder(ingredientIds)).unwrap()
-			setIsOrderModalOpen(true)
-			dispatch(clearConstructor())
+	
+			let resultAction = await dispatch(createOrder(ingredientIds))
+
+	
+			if (
+				createOrder.rejected.match(resultAction) &&
+				resultAction.error?.message?.includes('jwt expired')
+			) {
+			
+				const refreshToken = localStorage.getItem('refreshToken')
+				if (!refreshToken) {
+					navigate('/login', { state: { from: '/' } })
+					return
+				}
+
+				const refreshResponse = await fetch(
+					'https://norma.nomoreparties.space/api/auth/token',
+					{
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ token: refreshToken }),
+					}
+				)
+
+				if (!refreshResponse.ok) {
+					navigate('/login', { state: { from: '/' } })
+					return
+				}
+
+				const { accessToken, refreshToken: newRefreshToken } =
+					await refreshResponse.json()
+
+				
+				dispatch(updateTokens({ accessToken, refreshToken: newRefreshToken }))
+
+				
+				resultAction = await dispatch(createOrder(ingredientIds))
+			}
+
+		
+			if (createOrder.fulfilled.match(resultAction)) {
+				setIsOrderModalOpen(true)
+				dispatch(clearConstructor())
+			} else if (createOrder.rejected.match(resultAction)) {
+				throw new Error(
+					resultAction.error?.message || 'Ошибка оформления заказа'
+				)
+			}
 		} catch (error) {
 			console.error('Ошибка оформления заказа:', error)
+			if (
+				error.message.includes('jwt expired') ||
+				error.message.includes('invalid token')
+			) {
+				navigate('/login', { state: { from: '/' } })
+			}
 		}
 	}
 	const moveCard = (dragIndex: number, hoverIndex: number) => {

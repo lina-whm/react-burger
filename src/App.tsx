@@ -26,8 +26,12 @@ import NotFoundPage from './pages/NotFoundPage'
 import ProtectedRoute from './components/protected-route/ProtectedRoute'
 import UnauthRoute from './components/unauth-route/UnauthRoute'
 import ResetPasswordRoute from './components/reset-password-route/ResetPasswordRoute'
+import FeedPage from './pages/feed/FeedPage'
+import OrderDetailsPage from './pages/order-details/OrderDetailsPage'
+import ProfileOrdersPage from './pages/profile/orders/ProfileOrdersPage'
+import OrderDetailsModal from './components/order-details-modal/order-details-modal'
 import styles from './App.module.css'
-import { Ingredient } from './components/utils/types'
+import { Ingredient } from './services/types'
 
 function App() {
 	const location = useLocation()
@@ -38,10 +42,8 @@ function App() {
 		useState<Ingredient | null>(null)
 	const [isModalOpened, setIsModalOpened] = useState(false)
 
-	// определяем, открыто ли модальное окно
 	const background = location.state?.background
 
-	// восстанавливаем состояние при загрузке
 	useEffect(() => {
 		if (location.pathname.startsWith('/ingredients/')) {
 			const ingredientId = id || location.pathname.split('/')[2]
@@ -49,7 +51,6 @@ function App() {
 
 			if (ingredient) {
 				setSelectedIngredient(ingredient)
-				// если есть background - значит это модальное окно
 				if (background) {
 					setIsModalOpened(true)
 				}
@@ -75,7 +76,6 @@ function App() {
 			<div className={styles.App}>
 				<AppHeader />
 
-				{/* Основные маршруты */}
 				<Routes location={background || location}>
 					<Route
 						path='/'
@@ -134,18 +134,57 @@ function App() {
 						}
 					/>
 
-					{/* Отдельная страница ингредиента */}
+					<Route
+						path='/profile/orders'
+						element={
+							<ProtectedRoute>
+								<ProfileOrdersPage />
+							</ProtectedRoute>
+						}
+					/>
+
 					<Route path='/ingredients/:id' element={<IngredientDetailsPage />} />
+					<Route path='/feed' element={<FeedPage />} />
+					<Route path='/feed/:number' element={<OrderDetailsPage />} />
+
+					<Route
+						path='/profile/orders/:number'
+						element={
+							<ProtectedRoute>
+								<OrderDetailsPage />
+							</ProtectedRoute>
+						}
+					/>
 
 					<Route path='/404' element={<NotFoundPage />} />
 					<Route path='*' element={<Navigate to='/404' replace />} />
 				</Routes>
 
-				{/* Модальное окно для ингредиента */}
 				{isModalOpened && selectedIngredient && (
 					<Modal onClose={handleCloseModal} title='Детали ингредиента'>
 						<IngredientDetails ingredient={selectedIngredient} />
 					</Modal>
+				)}
+
+				{background && (
+					<Routes>
+						<Route
+							path='/feed/:number'
+							element={
+								<Modal onClose={handleCloseModal} title=''>
+									<OrderDetailsModal />
+								</Modal>
+							}
+						/>
+						<Route
+							path='/profile/orders/:number'
+							element={
+								<Modal onClose={handleCloseModal} title=''>
+									<OrderDetailsModal />
+								</Modal>
+							}
+						/>
+					</Routes>
 				)}
 			</div>
 		</DndProvider>

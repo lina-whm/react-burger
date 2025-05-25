@@ -1,47 +1,48 @@
-import { Middleware } from '@reduxjs/toolkit'
-import { refreshToken } from '../api/authApi'
+import { Middleware, AnyAction } from '@reduxjs/toolkit'
 import { logoutUser } from '../slices/authSlice'
-import { getCookie } from '../utils/cookies'
-import { AppDispatch, RootState } from '../types'
+import { getCookie, setCookie } from '../utils/cookies'
+import { refreshToken } from '../api/authApi'
 
-export const refreshTokenMiddleware: Middleware<
-	Record<string, never>,
-	RootState,
-	AppDispatch
-> = store => next => async action => {
-	if (action.type.endsWith('/rejected')) {
-		const error = action.payload || action.error
+export const createRefreshTokenMiddleware = (): Middleware => {
+	return store => next => async action => {
+		const typedStore = store as {
+			dispatch: (action: AnyAction) => Promise<any>
+		}
 
-		if (error?.message?.includes('jwt expired')) {
-			try {
-				const refreshTokenValue = localStorage.getItem('refreshToken')
-				if (!refreshTokenValue) {
-					store.dispatch(logoutUser())
-					return next(action)
-				}
+		if (action.type.endsWith('/rejected')) {
+			const error = action.payload || action.error
 
-				const tokenData = await refreshToken(refreshTokenValue)
-				const accessToken = tokenData.accessToken.split('Bearer ')[1]
-				document.cookie = `accessToken=${accessToken}; max-age=${
-					20 * 60
-				}; path=/`
-				localStorage.setItem('refreshToken', tokenData.refreshToken)
-
-				if (action.meta?.arg) {
-					const newAction = {
-						...action.meta.arg,
-						headers: {
-							...action.meta.arg.headers,
-							Authorization: `Bearer ${accessToken}`,
-						},
+			if (
+				error?.message?.includes('jwt expired') ||
+				error?.message?.includes('jwt malformed')
+			) {
+				try {
+					const refreshTokenValue = localStorage.getItem('refreshToken')
+					if (!refreshTokenValue) {
+						await typedStore.dispatch(logoutUser() as unknown as AnyAction)
+						return next(action)
 					}
-					return store.dispatch(newAction)
+
+					const tokenData = await refreshToken(refreshTokenValue)
+					const accessToken = tokenData.accessToken.split('Bearer ')[1]
+					setCookie('accessToken', accessToken, { expires: 20 * 60 })
+					localStorage.setItem('refreshToken', tokenData.refreshToken)
+
+					const originalAction = action.meta?.arg
+					if (originalAction) {
+						return typedStore.dispatch({
+							...originalAction,
+							headers: {
+								...originalAction.headers,
+								Authorization: `Bearer ${accessToken}`,
+							},
+						} as AnyAction)
+					}
+				} catch (error) {
+					await typedStore.dispatch(logoutUser() as unknown as AnyAction)
 				}
-			} catch (error) {
-				store.dispatch(logoutUser())
 			}
 		}
+		return next(action)
 	}
-
-	return next(action)
 }

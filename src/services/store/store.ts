@@ -4,15 +4,18 @@ import ingredientsReducer from '../slices/ingredientsSlice'
 import orderReducer from '../slices/orderSlice'
 import ingredientDetailsReducer from '../slices/ingredientDetailsSlice'
 import authReducer from '../slices/authSlice'
-import { refreshTokenMiddleware } from './refreshTokenMiddleware'
+import ordersFeedReducer from '../slices/ordersFeedSlice'
+import { createRefreshTokenMiddleware } from './refreshTokenMiddleware'
+import { wsMiddleware } from '../middleware/wsMiddleware'
 
-export const store = configureStore({
+const store = configureStore({
 	reducer: {
 		auth: authReducer,
 		burgerConstructor: constructorReducer,
 		ingredients: ingredientsReducer,
 		order: orderReducer,
 		ingredientDetails: ingredientDetailsReducer,
+		ordersFeed: ordersFeedReducer,
 	},
 	middleware: getDefaultMiddleware =>
 		getDefaultMiddleware({
@@ -20,14 +23,18 @@ export const store = configureStore({
 				ignoredActions: [
 					'burgerConstructor/addIngredient',
 					'ingredients/fetchIngredients/fulfilled',
+					'WS_CONNECTION_ERROR',
+					'WS_GET_MESSAGE',
 				],
 				ignoredPaths: [
 					'burgerConstructor.ingredients.*.uniqueId',
 					'ingredients.items',
 				],
 			},
-		}).concat(refreshTokenMiddleware),
+		}).concat(wsMiddleware, createRefreshTokenMiddleware()),
 })
+
+export default store
 
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch

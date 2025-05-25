@@ -1,0 +1,6 @@
+export { default as authReducer } from './authSlice'
+export { default as constructorReducer } from './constructorSlice'
+export { default as ingredientsReducer } from './ingredientsSlice'
+export { default as orderReducer } from './orderSlice'
+export { default as ingredientDetailsReducer } from './ingredientDetailsSlice'
+export { default as ordersFeedReducer } from './ordersFeedSlice'

@@ -15,18 +15,18 @@ const initialState: OrderState = {
 
 export const createOrder = createAsyncThunk(
 	'order/createOrder',
-	async (ingredients: string[]) => {
-		const response = await request<{ order: { number: number } }>('/orders', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ ingredients }),
-		})
-		return response.order.number
+	async (ingredients: string[], { rejectWithValue }) => {
+		try {
+			const response = await request<{ order: { number: number } }>('/orders', {
+				method: 'POST',
+				body: JSON.stringify({ ingredients }),
+			})
+			return response.order.number
+		} catch (error: any) {
+			return rejectWithValue(error.message)
+		}
 	}
 )
-
 const orderSlice = createSlice({
 	name: 'order',
 	initialState,

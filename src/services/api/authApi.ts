@@ -1,6 +1,7 @@
 import { request } from '../../components/utils/api'
 import { getCookie } from '../../services/utils/cookies'
 
+
 interface IUser {
 	email: string
 	name: string

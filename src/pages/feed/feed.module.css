@@ -1,0 +1,61 @@
+.container {
+  max-width: 1240px;
+  margin: 40px auto 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+}
+
+.title {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.ordersList {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  padding-right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.statsContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.statusColumns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+  margin-bottom: 60px;
+}
+
+.statusColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.doneList {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  color: #00CCCC;
+}
+
+.pendingList {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.total {
+  margin-bottom: 60px;
+}
+
+.totalNumber {
+  text-shadow: 0px 0px 16px rgba(51, 51, 255, 0.25), 
+               0px 0px 8px rgba(51, 51, 255, 0.25), 
+               0px 4px 32px rgba(51, 51, 255, 0.5);
+}

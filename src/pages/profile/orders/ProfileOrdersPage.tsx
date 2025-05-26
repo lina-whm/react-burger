@@ -1,39 +1,46 @@
 import React, { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '../../../services/hooks'
 import {
-	wsConnect,
-	wsDisconnect,
+	wsConnectionStart,
+	wsConnectionClosed,
 } from '../../../services/slices/ordersFeedSlice'
 import OrderCard from '../../../components/order-card/order-card'
 import styles from './profile-orders.module.css'
-import { getCookie } from '../../../services/utils/cookies'
 
 const ProfileOrdersPage: React.FC = () => {
 	const dispatch = useAppDispatch()
 	const { orders, wsConnected, error } = useAppSelector(
 		state => state.ordersFeed
 	)
+	const { isAuth } = useAppSelector(state => state.auth)
 
 	useEffect(() => {
-		const token = localStorage.getItem('accessToken')?.replace('Bearer ', '')
-		if (!token) return
-
-		dispatch(
-			wsConnect({
-				url: `wss://norma.nomoreparties.space/orders?token=${token}`,
-				withToken: true,
-			})
-		)
+		if (isAuth) {
+			dispatch(
+				wsConnectionStart({
+					url: 'wss://norma.nomoreparties.space/orders',
+					withToken: true,
+				})
+			)
+		}
 
 		return () => {
-			dispatch(wsDisconnect())
+			dispatch(wsConnectionClosed())
 		}
-	}, [dispatch])
+	}, [dispatch, isAuth])
+
+	if (!isAuth) {
+		return (
+			<div className={`${styles.container} text text_type_main-default`}>
+				Пожалуйста, авторизуйтесь
+			</div>
+		)
+	}
 
 	if (error) {
 		return (
 			<div className={`${styles.container} text text_type_main-default`}>
-				Ошибка подключения: {error}
+				Ошибка: {error}
 			</div>
 		)
 	}

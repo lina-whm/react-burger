@@ -1,12 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
+import { createRefreshTokenMiddleware } from './refreshTokenMiddleware'
+import { socketMiddleware } from '../middleware/wsMiddleware'
+import authReducer from '../slices/authSlice'
 import constructorReducer from '../slices/constructorSlice'
 import ingredientsReducer from '../slices/ingredientsSlice'
 import orderReducer from '../slices/orderSlice'
 import ingredientDetailsReducer from '../slices/ingredientDetailsSlice'
-import authReducer from '../slices/authSlice'
 import ordersFeedReducer from '../slices/ordersFeedSlice'
-import { createRefreshTokenMiddleware } from './refreshTokenMiddleware'
-import { wsMiddleware } from '../middleware/wsMiddleware'
 
 const store = configureStore({
 	reducer: {
@@ -23,15 +23,16 @@ const store = configureStore({
 				ignoredActions: [
 					'burgerConstructor/addIngredient',
 					'ingredients/fetchIngredients/fulfilled',
-					'WS_CONNECTION_ERROR',
-					'WS_GET_MESSAGE',
+					'ordersFeed/wsConnectionError',
+					'ordersFeed/wsConnectionStart',
+					'ordersFeed/wsGetOrders',
 				],
 				ignoredPaths: [
 					'burgerConstructor.ingredients.*.uniqueId',
 					'ingredients.items',
 				],
 			},
-		}).concat(wsMiddleware, createRefreshTokenMiddleware()),
+		}).concat(socketMiddleware(), createRefreshTokenMiddleware()),
 })
 
 export default store

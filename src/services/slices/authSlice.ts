@@ -47,7 +47,7 @@ export const registerUser = createAsyncThunk(
 	) => {
 		try {
 			const res = await apiRegister(data)
-			localStorage.setItem('accessToken', res.accessToken) 
+			localStorage.setItem('accessToken', res.accessToken)
 			localStorage.setItem('refreshToken', res.refreshToken)
 			setCookie('accessToken', res.accessToken.split('Bearer ')[1])
 			return res.user
@@ -163,6 +163,29 @@ export const confirmPasswordReset = createAsyncThunk(
 	}
 )
 
+export const refreshTokens = createAsyncThunk(
+	'auth/refreshTokens',
+	async (_, { rejectWithValue }) => {
+		try {
+			const refreshToken = localStorage.getItem('refreshToken')
+			if (!refreshToken) throw new Error('No refresh token')
+
+			const tokenData = await apiRefreshToken(refreshToken)
+			const token = tokenData.accessToken.split('Bearer ')[1]
+
+			document.cookie = `accessToken=${token}; path=/; max-age=${20 * 60}`
+			localStorage.setItem('refreshToken', tokenData.refreshToken)
+
+			return {
+				accessToken: tokenData.accessToken,
+				refreshToken: tokenData.refreshToken,
+			}
+		} catch (error: any) {
+			return rejectWithValue(error.message)
+		}
+	}
+)
+
 const authSlice = createSlice({
 	name: 'auth',
 	initialState,
@@ -170,7 +193,7 @@ const authSlice = createSlice({
 		clearAuthError: state => {
 			state.error = null
 		},
-		updateTokens: (state, action: PayloadAction<Tokens>) => {
+		setTokens: (state, action: PayloadAction<Tokens>) => {
 			const tokenWithoutBearer = action.payload.accessToken.split('Bearer ')[1]
 			setCookie('accessToken', tokenWithoutBearer, { expires: 20 * 60 })
 			localStorage.setItem('refreshToken', action.payload.refreshToken)
@@ -230,9 +253,16 @@ const authSlice = createSlice({
 			.addCase(confirmPasswordReset.fulfilled, state => {
 				state.resetPasswordRequest = true
 			})
+			.addCase(refreshTokens.fulfilled, state => {
+				state.isAuth = true
+			})
+			.addCase(refreshTokens.rejected, (state, action) => {
+				state.isAuth = false
+				state.error = action.payload as string
+			})
 	},
 })
 
-export const { clearAuthError, updateTokens } = authSlice.actions
+export const { clearAuthError, setTokens } = authSlice.actions
 export const selectIsAuth = (state: { auth: IAuthState }) => state.auth.isAuth
 export default authSlice.reducer

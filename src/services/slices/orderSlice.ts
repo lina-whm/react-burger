@@ -17,16 +17,21 @@ export const createOrder = createAsyncThunk(
 	'order/createOrder',
 	async (ingredients: string[], { rejectWithValue }) => {
 		try {
-			const response = await request<{ order: { number: number } }>('/orders', {
+			const response = await request<{
+				success: boolean
+				name: string
+				order: { number: number }
+			}>('/orders', {
 				method: 'POST',
 				body: JSON.stringify({ ingredients }),
 			})
 			return response.order.number
 		} catch (error: any) {
-			return rejectWithValue(error.message)
+			return rejectWithValue(error.message || 'Failed to create order')
 		}
 	}
 )
+
 const orderSlice = createSlice({
 	name: 'order',
 	initialState,
@@ -48,7 +53,7 @@ const orderSlice = createSlice({
 			})
 			.addCase(createOrder.rejected, (state, action) => {
 				state.loading = false
-				state.error = action.error.message || 'Ошибка оформления заказа'
+				state.error = (action.payload as string) || 'Failed to create order'
 			})
 	},
 })

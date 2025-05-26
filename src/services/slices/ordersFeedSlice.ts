@@ -6,8 +6,7 @@ interface OrdersFeedState {
 	total: number
 	totalToday: number
 	wsConnected: boolean
-	error?: string
-	isLoading: boolean
+	error?: string 
 }
 
 const initialState: OrdersFeedState = {
@@ -15,59 +14,47 @@ const initialState: OrdersFeedState = {
 	total: 0,
 	totalToday: 0,
 	wsConnected: false,
-	isLoading: true,
 }
 
 export const ordersFeedSlice = createSlice({
 	name: 'ordersFeed',
 	initialState,
 	reducers: {
-		wsConnect(
+		wsConnectionStart: (
 			state,
 			action: PayloadAction<{ url: string; withToken: boolean }>
-		) {
-			state.isLoading = true
+		) => {
+			state.wsConnected = false
 			state.error = undefined
 		},
-		wsDisconnect(state) {
-			state.wsConnected = false
-			state.isLoading = false
-		},
-		wsConnectionSuccess(state) {
+		wsConnectionSuccess: state => {
 			state.wsConnected = true
 			state.error = undefined
-			state.isLoading = false
 		},
-		wsConnectionError(state, action: PayloadAction<string>) {
+		wsConnectionError: (state, action: PayloadAction<string>) => {
 			state.wsConnected = false
 			state.error = action.payload
-			state.isLoading = false
 		},
-		wsConnectionClosed(state) {
+		wsConnectionClosed: state => {
 			state.wsConnected = false
-			state.isLoading = false
+			state.error = undefined
 		},
-		wsGetMessage(state, action: PayloadAction<OrdersResponse>) {
+		wsGetOrders: (state, action: PayloadAction<OrdersResponse>) => {
 			state.orders = action.payload.orders
 			state.total = action.payload.total
 			state.totalToday = action.payload.totalToday
-			state.isLoading = false
 		},
-		wsGetMessageError(state, action: PayloadAction<string>) {
-			state.error = action.payload
-			state.isLoading = false
-		},
+		wsSendMessage: (state, action: PayloadAction<any>) => {},
 	},
 })
 
 export const {
-	wsConnect,
-	wsDisconnect,
+	wsConnectionStart,
 	wsConnectionSuccess,
 	wsConnectionError,
 	wsConnectionClosed,
-	wsGetMessage,
-	wsGetMessageError,
+	wsGetOrders,
+	wsSendMessage,
 } = ordersFeedSlice.actions
 
 export default ordersFeedSlice.reducer

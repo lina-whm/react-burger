@@ -32,6 +32,7 @@ export interface OrdersResponse {
 	orders: Order[]
 	total: number
 	totalToday: number
+	message?: string
 }
 
 export interface IUser {

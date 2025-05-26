@@ -1,7 +1,6 @@
 import { Middleware, AnyAction } from '@reduxjs/toolkit'
-import { logoutUser } from '../slices/authSlice'
+import { logoutUser, refreshTokens } from '../slices/authSlice'
 import { getCookie, setCookie } from '../utils/cookies'
-import { refreshToken } from '../api/authApi'
 
 export const createRefreshTokenMiddleware = (): Middleware => {
 	return store => next => async action => {
@@ -23,20 +22,21 @@ export const createRefreshTokenMiddleware = (): Middleware => {
 						return next(action)
 					}
 
-					const tokenData = await refreshToken(refreshTokenValue)
-					const accessToken = tokenData.accessToken.split('Bearer ')[1]
-					setCookie('accessToken', accessToken, { expires: 20 * 60 })
-					localStorage.setItem('refreshToken', tokenData.refreshToken)
+					const result = await typedStore.dispatch(
+						refreshTokens() as unknown as AnyAction
+					)
 
-					const originalAction = action.meta?.arg
-					if (originalAction) {
-						return typedStore.dispatch({
-							...originalAction,
-							headers: {
-								...originalAction.headers,
-								Authorization: `Bearer ${accessToken}`,
-							},
-						} as AnyAction)
+					if (refreshTokens.fulfilled.match(result)) {
+						const originalAction = action.meta?.arg
+						if (originalAction) {
+							return typedStore.dispatch({
+								...originalAction,
+								headers: {
+									...originalAction.headers,
+									Authorization: `Bearer ${getCookie('accessToken')}`,
+								},
+							} as AnyAction)
+						}
 					}
 				} catch (error) {
 					await typedStore.dispatch(logoutUser() as unknown as AnyAction)

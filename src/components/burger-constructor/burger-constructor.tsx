@@ -13,13 +13,13 @@ import {
 	moveIngredient,
 } from '../../services/slices/constructorSlice'
 import { createOrder } from '../../services/slices/orderSlice'
+import { refreshTokens } from '../../services/slices/authSlice'
 import DraggableIngredient from './draggable-ingredient'
 import Modal from '../modal/modal'
 import OrderDetails from '../order-details/order-details'
 import styles from './burger-constructor.module.css'
 import classNames from 'classnames'
 import { ConstructorIngredient } from '../../components/utils/types'
-import { updateTokens } from '../../services/slices/authSlice'
 
 const BurgerConstructor: React.FC = () => {
 	const dispatch = useAppDispatch()
@@ -40,7 +40,6 @@ const BurgerConstructor: React.FC = () => {
 	}))
 
 	const handleOrderClick = async () => {
-		
 		if (!isAuth) {
 			navigate('/login', { state: { from: '/' } })
 			return
@@ -55,46 +54,21 @@ const BurgerConstructor: React.FC = () => {
 				bun._id,
 			]
 
-	
 			let resultAction = await dispatch(createOrder(ingredientIds))
 
-	
 			if (
 				createOrder.rejected.match(resultAction) &&
 				resultAction.error?.message?.includes('jwt expired')
 			) {
-			
-				const refreshToken = localStorage.getItem('refreshToken')
-				if (!refreshToken) {
+				try {
+					await dispatch(refreshTokens()).unwrap()
+					resultAction = await dispatch(createOrder(ingredientIds))
+				} catch (refreshError) {
 					navigate('/login', { state: { from: '/' } })
 					return
 				}
-
-				const refreshResponse = await fetch(
-					'https://norma.nomoreparties.space/api/auth/token',
-					{
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ token: refreshToken }),
-					}
-				)
-
-				if (!refreshResponse.ok) {
-					navigate('/login', { state: { from: '/' } })
-					return
-				}
-
-				const { accessToken, refreshToken: newRefreshToken } =
-					await refreshResponse.json()
-
-				
-				dispatch(updateTokens({ accessToken, refreshToken: newRefreshToken }))
-
-				
-				resultAction = await dispatch(createOrder(ingredientIds))
 			}
 
-		
 			if (createOrder.fulfilled.match(resultAction)) {
 				setIsOrderModalOpen(true)
 				dispatch(clearConstructor())
@@ -113,6 +87,7 @@ const BurgerConstructor: React.FC = () => {
 			}
 		}
 	}
+
 	const moveCard = (dragIndex: number, hoverIndex: number) => {
 		if (dragIndex === hoverIndex) return
 		dispatch(moveIngredient({ dragIndex, hoverIndex }))

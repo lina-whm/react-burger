@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '../../services/hooks'
-import { wsConnect, wsDisconnect } from '../../services/slices/ordersFeedSlice'
+import {
+	wsConnectionStart,
+	wsConnectionClosed,
+} from '../../services/slices/ordersFeedSlice'
 import OrderCard from '../../components/order-card/order-card'
 import styles from './feed.module.css'
-
 
 const FeedPage: React.FC = () => {
 	const dispatch = useAppDispatch()
@@ -13,23 +15,31 @@ const FeedPage: React.FC = () => {
 
 	useEffect(() => {
 		dispatch(
-			wsConnect({
+			wsConnectionStart({
 				url: 'wss://norma.nomoreparties.space/orders/all',
 				withToken: false,
 			})
 		)
 
 		return () => {
-			dispatch(wsDisconnect())
+			dispatch(wsConnectionClosed())
 		}
 	}, [dispatch])
 
 	if (error) {
-		return <div>Ошибка подключения: {error}</div>
+		return (
+			<div className='text text_type_main-default'>
+				Ошибка подключения: {error}
+			</div>
+		)
 	}
 
 	if (!wsConnected) {
-		return <div>Подключаемся к ленте заказов...</div>
+		return (
+			<div className='text text_type_main-default'>
+				Подключаемся к ленте заказов...
+			</div>
+		)
 	}
 
 	const doneOrders = orders

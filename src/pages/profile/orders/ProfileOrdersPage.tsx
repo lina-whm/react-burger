@@ -12,10 +12,17 @@ const ProfileOrdersPage: React.FC = () => {
 	const { orders, wsConnected, error } = useAppSelector(
 		state => state.ordersFeed
 	)
-	const { isAuth } = useAppSelector(state => state.auth)
+	const { isAuth, isLoading } = useAppSelector(state => state.auth)
 
 	useEffect(() => {
-		if (isAuth) {
+		if (isAuth && !isLoading) {
+			const accessToken = localStorage
+				.getItem('accessToken')
+				?.replace('Bearer ', '')
+			if (!accessToken) {
+				return
+			}
+
 			dispatch(
 				wsConnectionStart({
 					url: 'wss://norma.nomoreparties.space/orders',
@@ -27,7 +34,15 @@ const ProfileOrdersPage: React.FC = () => {
 		return () => {
 			dispatch(wsConnectionClosed())
 		}
-	}, [dispatch, isAuth])
+	}, [dispatch, isAuth, isLoading])
+
+	if (isLoading) {
+		return (
+			<div className={`${styles.container} text text_type_main-default`}>
+				Проверка авторизации...
+			</div>
+		)
+	}
 
 	if (!isAuth) {
 		return (
@@ -48,7 +63,7 @@ const ProfileOrdersPage: React.FC = () => {
 	if (!wsConnected) {
 		return (
 			<div className={`${styles.container} text text_type_main-default`}>
-				Подключаемся к истории заказов...
+				Загружаем историю заказов...
 			</div>
 		)
 	}
@@ -56,15 +71,20 @@ const ProfileOrdersPage: React.FC = () => {
 	return (
 		<div className={styles.container}>
 			<div className={styles.ordersList}>
-				{orders
-					.filter(order => order)
-					.sort(
-						(a, b) =>
-							new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-					)
-					.map(order => (
-						<OrderCard key={order._id} order={order} showStatus={true} />
-					))}
+				{orders.length > 0 ? (
+					orders
+						.filter(order => order)
+						.sort(
+							(a, b) =>
+								new Date(b.createdAt).getTime() -
+								new Date(a.createdAt).getTime()
+						)
+						.map(order => (
+							<OrderCard key={order._id} order={order} showStatus={true} />
+						))
+				) : (
+					<p className='text text_type_main-default'>У вас пока нет заказов</p>
+				)}
 			</div>
 		</div>
 	)

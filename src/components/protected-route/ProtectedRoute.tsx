@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
-import { useAppSelector, useAppDispatch } from '../../services/hooks'
+import { useAppDispatch, useAppSelector } from '../../services/hooks'
 import { checkUserAuth } from '../../services/slices/authSlice'
 
 const ProtectedRoute: FC<{ children: JSX.Element }> = ({ children }) => {
@@ -23,7 +23,7 @@ const ProtectedRoute: FC<{ children: JSX.Element }> = ({ children }) => {
 					fontSize: '24px',
 				}}
 			>
-				Загрузка...
+				Проверка авторизации...
 			</div>
 		)
 	}

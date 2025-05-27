@@ -32,6 +32,7 @@ export const ordersFeedSlice = createSlice({
 			state.error = undefined
 		},
 		wsConnectionError: (state, action: PayloadAction<string>) => {
+			// Теперь принимаем строку
 			state.wsConnected = false
 			state.error = action.payload
 		},

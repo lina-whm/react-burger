@@ -9,14 +9,14 @@ import styles from './feed.module.css'
 
 const FeedPage: React.FC = () => {
 	const dispatch = useAppDispatch()
-	const { orders, total, totalToday, wsConnected, error } = useAppSelector(
+	const { orders, total, totalToday, wsConnected } = useAppSelector(
 		state => state.ordersFeed
 	)
 
 	useEffect(() => {
 		dispatch(
 			wsConnectionStart({
-				url: 'wss://norma.nomoreparties.space/orders/all',
+				url: 'wss://norma.nomoreparties.space/orders',
 				withToken: false,
 			})
 		)
@@ -26,20 +26,8 @@ const FeedPage: React.FC = () => {
 		}
 	}, [dispatch])
 
-	if (error) {
-		return (
-			<div className='text text_type_main-default'>
-				Ошибка подключения: {error}
-			</div>
-		)
-	}
-
 	if (!wsConnected) {
-		return (
-			<div className='text text_type_main-default'>
-				Подключаемся к ленте заказов...
-			</div>
-		)
+		return <div>Подключаемся к ленте заказов...</div>
 	}
 
 	const doneOrders = orders

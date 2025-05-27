@@ -63,15 +63,16 @@ export const loginUser = createAsyncThunk(
 		try {
 			const res = await apiLogin(data)
 			const tokenWithoutBearer = res.accessToken.split('Bearer ')[1]
-			setCookie('accessToken', tokenWithoutBearer, { expires: 20 * 60 })
+			localStorage.setItem('accessToken', res.accessToken)
 			localStorage.setItem('refreshToken', res.refreshToken)
+			setCookie('accessToken', tokenWithoutBearer, { expires: 20 * 60 })
+
 			return res.user
 		} catch (error: any) {
 			return rejectWithValue(error.message)
 		}
 	}
 )
-
 export const logoutUser = createAsyncThunk(
 	'auth/logout',
 	async (_, { rejectWithValue }) => {
@@ -96,15 +97,16 @@ export const checkUserAuth = createAsyncThunk(
 		try {
 			const refreshToken = localStorage.getItem('refreshToken')
 			if (!refreshToken) throw new Error('No refresh token')
-			deleteCookie('accessToken')
 
 			const tokenData = await apiRefreshToken(refreshToken)
 			const accessToken = tokenData.accessToken.split('Bearer ')[1]
 
-			setCookie('accessToken', accessToken)
+			localStorage.setItem('accessToken', tokenData.accessToken)
 			localStorage.setItem('refreshToken', tokenData.refreshToken)
+			setCookie('accessToken', accessToken)
 
-			return dispatch(fetchUser()).unwrap()
+			const userData = await dispatch(fetchUser()).unwrap()
+			return userData
 		} catch (error: any) {
 			dispatch(logoutUser())
 			return rejectWithValue(error.message)

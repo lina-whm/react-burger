@@ -1,12 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { Tab } from '@ya.praktikum/react-developer-burger-ui-components'
 import IngredientCard from './ingredient-card/ingredient-card'
 import styles from './burger-ingredients.module.css'
-import { RootState } from '../../services/store/store'
-import { Ingredient } from '../../components/utils/types'
-import { useAppDispatch } from '../../services/hooks/useAppDispatch'
+import { useAppSelector, useAppDispatch } from '../../services/hooks'
 import { fetchIngredients } from '../../services/slices/ingredientsSlice'
+import { Ingredient } from '../../services/types'
 
 interface BurgerIngredientsProps {
 	onIngredientClick: (ingredient: Ingredient) => void
@@ -16,9 +14,11 @@ const BurgerIngredients: React.FC<BurgerIngredientsProps> = ({
 	onIngredientClick,
 }) => {
 	const dispatch = useAppDispatch()
-	const { items, loading, error } = useSelector(
-		(state: RootState) => state.ingredients
-	)
+	const {
+		items: ingredients,
+		loading,
+		error,
+	} = useAppSelector(state => state.ingredients)
 	const [currentTab, setCurrentTab] = useState<'bun' | 'sauce' | 'main'>('bun')
 
 	const bunRef = useRef<HTMLDivElement>(null)
@@ -70,9 +70,9 @@ const BurgerIngredients: React.FC<BurgerIngredientsProps> = ({
 		}
 	}
 
-	const buns = items.filter(item => item.type === 'bun')
-	const sauces = items.filter(item => item.type === 'sauce')
-	const mains = items.filter(item => item.type === 'main')
+	const buns = ingredients.filter(item => item.type === 'bun')
+	const sauces = ingredients.filter(item => item.type === 'sauce')
+	const mains = ingredients.filter(item => item.type === 'main')
 
 	if (loading)
 		return (
@@ -80,7 +80,7 @@ const BurgerIngredients: React.FC<BurgerIngredientsProps> = ({
 		)
 	if (error)
 		return <p className='text text_type_main-default'>Ошибка: {error}</p>
-	if (items.length === 0)
+	if (ingredients.length === 0)
 		return (
 			<p className='text text_type_main-default'>Нет доступных ингредиентов</p>
 		)

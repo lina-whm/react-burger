@@ -1,6 +1,6 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { useAppSelector } from '../../services/hooks'
+import { useAppSelector } from '../../services/hooks/useAppSelector'
 import { CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components'
 import styles from './order-details-full.module.css'
 import { OrderStatus } from '../../services/types'

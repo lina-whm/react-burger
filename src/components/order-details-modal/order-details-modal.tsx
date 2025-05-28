@@ -1,6 +1,6 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { useAppSelector } from '../../services/hooks'
+import { useAppSelector } from '../../services/hooks/useAppSelector'
 import OrderDetailsFull from '../order-details-full/order-details-full'
 
 const OrderDetailsModal: React.FC = () => {

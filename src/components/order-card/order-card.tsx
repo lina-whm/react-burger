@@ -2,7 +2,7 @@ import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components'
 import { formatDate } from './../utils/date'
-import { useAppSelector } from '../../services/hooks'
+import { useAppSelector } from '../../services/hooks/useAppSelector'
 import { Order, Ingredient } from '../../services/types'
 import styles from './order-card.module.css'
 

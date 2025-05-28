@@ -17,6 +17,8 @@ export interface ConstructorIngredient extends Ingredient {
 	uniqueId: string
 }
 
+export type OrderStatus = 'created' | 'pending' | 'done' | 'cancelled'
+
 export interface Order {
 	_id: string
 	ingredients: string[]
@@ -77,4 +79,12 @@ export interface OrdersFeedState {
 	wsConnected: boolean
 	error?: string
 	isLoading: boolean
+}
+
+export interface WSMessage {
+	success: boolean
+	orders: Order[]
+	total: number
+	totalToday: number
+	message?: string
 }

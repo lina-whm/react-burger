@@ -7,7 +7,6 @@ import {
 	useLocation,
 	Navigate,
 	useNavigate,
-	useParams,
 } from 'react-router-dom'
 import { useAppSelector } from './services/hooks'
 import Modal from './components/modal/modal'
@@ -36,27 +35,11 @@ import { Ingredient } from './services/types'
 function App() {
 	const location = useLocation()
 	const navigate = useNavigate()
-	const { id } = useParams()
 	const { items: ingredients } = useAppSelector(state => state.ingredients)
 	const [selectedIngredient, setSelectedIngredient] =
 		useState<Ingredient | null>(null)
 	const [isModalOpened, setIsModalOpened] = useState(false)
-
 	const background = location.state?.background
-
-	useEffect(() => {
-		if (location.pathname.startsWith('/ingredients/')) {
-			const ingredientId = id || location.pathname.split('/')[2]
-			const ingredient = ingredients.find(item => item._id === ingredientId)
-
-			if (ingredient) {
-				setSelectedIngredient(ingredient)
-				if (background) {
-					setIsModalOpened(true)
-				}
-			}
-		}
-	}, [location, id, ingredients, background])
 
 	const handleOpenIngredientModal = (ingredient: Ingredient) => {
 		setSelectedIngredient(ingredient)
@@ -64,6 +47,15 @@ function App() {
 			state: { background: location },
 		})
 		setIsModalOpened(true)
+	}
+
+	const handleOpenOrderModal = (orderNumber: number, isProfile: boolean) => {
+		navigate(
+			isProfile ? `/profile/orders/${orderNumber}` : `/feed/${orderNumber}`,
+			{
+				state: { background: location },
+			}
+		)
 	}
 
 	const handleCloseModal = () => {
@@ -144,6 +136,7 @@ function App() {
 					/>
 
 					<Route path='/ingredients/:id' element={<IngredientDetailsPage />} />
+
 					<Route path='/feed' element={<FeedPage />} />
 					<Route path='/feed/:number' element={<OrderDetailsPage />} />
 

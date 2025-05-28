@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '../../services/hooks'
+import { useNavigate, useLocation } from 'react-router-dom'
 import {
 	wsConnectionStart,
 	wsConnectionClosed,
@@ -9,14 +10,22 @@ import styles from './feed.module.css'
 
 const FeedPage: React.FC = () => {
 	const dispatch = useAppDispatch()
+	const navigate = useNavigate()
+	const location = useLocation()
 	const { orders, total, totalToday, wsConnected } = useAppSelector(
 		state => state.ordersFeed
 	)
 
+	const handleOpenOrderModal = (orderNumber: number) => {
+		navigate(`/feed/${orderNumber}`, {
+			state: { background: location },
+		})
+	}
+
 	useEffect(() => {
 		dispatch(
 			wsConnectionStart({
-				url: 'wss://norma.nomoreparties.space/orders',
+				url: 'wss://norma.nomoreparties.space/orders/all',
 				withToken: false,
 			})
 		)
@@ -27,7 +36,11 @@ const FeedPage: React.FC = () => {
 	}, [dispatch])
 
 	if (!wsConnected) {
-		return <div>Подключаемся к ленте заказов...</div>
+		return (
+			<div className='text text_type_main-default'>
+				Подключаемся к ленте заказов...
+			</div>
+		)
 	}
 
 	const doneOrders = orders
@@ -46,7 +59,12 @@ const FeedPage: React.FC = () => {
 			<div className={styles.columns}>
 				<div className={styles.ordersList}>
 					{orders.map(order => (
-						<OrderCard key={order._id} order={order} />
+						<OrderCard
+							key={order._id}
+							order={order}
+							showStatus={false}
+							onClick={() => handleOpenOrderModal(order.number)}
+						/>
 					))}
 				</div>
 				<div className={styles.statsContainer}>

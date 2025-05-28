@@ -28,7 +28,7 @@ export async function request<T>(
 				headers,
 			})
 
-			if (response.status === 403 && shouldRetry) {
+			if (response.status === 403 && shouldRetry && url !== '/auth/token') {
 				shouldRetry = false
 				const refreshToken = localStorage.getItem('refreshToken')
 				if (!refreshToken) throw new Error('No refresh token')

@@ -10,12 +10,13 @@ interface OrderCardProps {
 	order: Order
 	showStatus?: boolean
 	maxIngredients?: number
+	onClick?: () => void
 }
-
 const OrderCard: React.FC<OrderCardProps> = ({
 	order,
 	showStatus = false,
 	maxIngredients = 6,
+	onClick,
 }) => {
 	const location = useLocation()
 	const { items: ingredients } = useAppSelector(state => state.ingredients)
@@ -34,6 +35,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
 			done: 'Выполнен',
 			pending: 'Готовится',
 			created: 'Создан',
+			cancelled: 'Отменён',
 		}[order.status] || order.status
 
 	const basePath = location.pathname.startsWith('/profile')
@@ -45,6 +47,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
 			to={`${basePath}/${order.number}`}
 			state={{ background: location }}
 			className={styles.card}
+			onClick={onClick}
 		>
 			<div className={styles.header}>
 				<span className='text text_type_digits-default'>

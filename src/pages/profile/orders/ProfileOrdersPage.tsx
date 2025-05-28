@@ -19,16 +19,14 @@ const ProfileOrdersPage: React.FC = () => {
 			const accessToken = localStorage
 				.getItem('accessToken')
 				?.replace('Bearer ', '')
-			if (!accessToken) {
-				return
+			if (accessToken) {
+				dispatch(
+					wsConnectionStart({
+						url: 'wss://norma.nomoreparties.space/orders',
+						withToken: true,
+					})
+				)
 			}
-
-			dispatch(
-				wsConnectionStart({
-					url: 'wss://norma.nomoreparties.space/orders',
-					withToken: true,
-				})
-			)
 		}
 
 		return () => {

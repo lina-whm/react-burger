@@ -1,22 +1,29 @@
+import { createAsyncThunk } from '@reduxjs/toolkit'
 import { request } from '../../components/utils/api'
-import { getCookie } from '../../services/utils/cookies'
+import { Order } from '../types'
 
-export interface OrderResponse {
-	success: boolean
-	name: string
-	order: {
-		number: number
+export const fetchOrder = createAsyncThunk(
+	'orders/fetchOrder',
+	async (number: string, { rejectWithValue }) => {
+		try {
+			const response = await request<{
+				success: boolean
+				orders: Order[]
+			}>(`/orders/${number}`)
+
+			console.log('API Response:', response)
+
+			if (
+				!response.success ||
+				!response.orders ||
+				response.orders.length === 0
+			) {
+				return rejectWithValue('Заказ не найден')
+			}
+			return response.orders[0]
+		} catch (error: any) {
+			console.error('API Error:', error) 
+			return rejectWithValue(error.message || 'Ошибка при загрузке заказа')
+		}
 	}
-}
-
-export const createOrder = (ingredientIds: string[]) => {
-	const accessToken = getCookie('accessToken')
-	return request<OrderResponse>('/orders', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${accessToken}`,
-		},
-		body: JSON.stringify({ ingredients: ingredientIds }),
-	})
-}
+)

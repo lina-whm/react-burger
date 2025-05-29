@@ -1,15 +1,26 @@
 import React from 'react'
 import { Button } from '@ya.praktikum/react-developer-burger-ui-components'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Input from '../../components/ui/Input/Input'
 import styles from './reset-password.module.css'
+import { useAppDispatch } from '../../services/hooks'
+import { confirmPasswordReset } from '../../services/slices/authSlice'
 
 const ResetPasswordPage = () => {
 	const [password, setPassword] = React.useState('')
 	const [token, setToken] = React.useState('')
+	const dispatch = useAppDispatch()
+	const navigate = useNavigate()
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
+		dispatch(confirmPasswordReset({ password, token }))
+			.unwrap()
+			.then(() => {
+				localStorage.removeItem('resetPassword')
+				navigate('/login')
+			})
+			.catch(console.error)
 	}
 
 	return (
@@ -26,6 +37,7 @@ const ResetPasswordPage = () => {
 					onChange={e => setPassword(e.target.value)}
 					icon='show'
 					extraClass='mb-6'
+					required
 				/>
 
 				<Input
@@ -34,6 +46,7 @@ const ResetPasswordPage = () => {
 					value={token}
 					onChange={e => setToken(e.target.value)}
 					extraClass='mb-6'
+					required
 				/>
 
 				<Button

@@ -1,4 +1,5 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { setCookie, getCookie, deleteCookie } from '../utils/cookies'
 import {
 	register as apiRegister,
 	login as apiLogin,
@@ -9,7 +10,6 @@ import {
 	forgotPassword as apiForgotPassword,
 	resetPassword as apiResetPassword,
 } from '../api/authApi'
-import { setCookie, getCookie, deleteCookie } from '../utils/cookies'
 
 interface IUser {
 	email: string
@@ -25,9 +25,14 @@ interface IAuthState {
 	resetPasswordRequest: boolean
 }
 
+interface Tokens {
+	accessToken: string
+	refreshToken: string
+}
+
 const initialState: IAuthState = {
 	user: null,
-	isAuth: false,
+	isAuth: !!getCookie('accessToken'),
 	isLoading: false,
 	error: null,
 	forgotPasswordRequest: false,
@@ -42,8 +47,9 @@ export const registerUser = createAsyncThunk(
 	) => {
 		try {
 			const res = await apiRegister(data)
-			setCookie('accessToken', res.accessToken.split('Bearer ')[1], 20 * 60)
+			localStorage.setItem('accessToken', res.accessToken)
 			localStorage.setItem('refreshToken', res.refreshToken)
+			setCookie('accessToken', res.accessToken.split('Bearer ')[1])
 			return res.user
 		} catch (error: any) {
 			return rejectWithValue(error.message)
@@ -56,15 +62,17 @@ export const loginUser = createAsyncThunk(
 	async (data: { email: string; password: string }, { rejectWithValue }) => {
 		try {
 			const res = await apiLogin(data)
-			setCookie('accessToken', res.accessToken.split('Bearer ')[1], 20 * 60)
+			const tokenWithoutBearer = res.accessToken.split('Bearer ')[1]
+			localStorage.setItem('accessToken', res.accessToken)
 			localStorage.setItem('refreshToken', res.refreshToken)
+			setCookie('accessToken', tokenWithoutBearer, { expires: 20 * 60 })
+
 			return res.user
 		} catch (error: any) {
 			return rejectWithValue(error.message)
 		}
 	}
 )
-
 export const logoutUser = createAsyncThunk(
 	'auth/logout',
 	async (_, { rejectWithValue }) => {
@@ -74,6 +82,7 @@ export const logoutUser = createAsyncThunk(
 				await apiLogout(refreshToken)
 			}
 			deleteCookie('accessToken')
+			localStorage.removeItem('accessToken')
 			localStorage.removeItem('refreshToken')
 			return true
 		} catch (error: any) {
@@ -87,17 +96,14 @@ export const checkUserAuth = createAsyncThunk(
 	async (_, { rejectWithValue, dispatch }) => {
 		try {
 			const refreshToken = localStorage.getItem('refreshToken')
-			if (!refreshToken) {
-				throw new Error('No refresh token')
-			}
+			if (!refreshToken) throw new Error('No refresh token')
 
 			const tokenData = await apiRefreshToken(refreshToken)
-			setCookie(
-				'accessToken',
-				tokenData.accessToken.split('Bearer ')[1],
-				20 * 60
-			)
+			const accessToken = tokenData.accessToken.split('Bearer ')[1]
+
+			localStorage.setItem('accessToken', tokenData.accessToken)
 			localStorage.setItem('refreshToken', tokenData.refreshToken)
+			setCookie('accessToken', accessToken)
 
 			const userData = await dispatch(fetchUser()).unwrap()
 			return userData
@@ -159,15 +165,41 @@ export const confirmPasswordReset = createAsyncThunk(
 	}
 )
 
+export const refreshTokens = createAsyncThunk(
+	'auth/refreshTokens',
+	async (_, { rejectWithValue }) => {
+		try {
+			const refreshToken = localStorage.getItem('refreshToken')
+			if (!refreshToken) throw new Error('No refresh token')
+
+			const tokenData = await apiRefreshToken(refreshToken)
+			const token = tokenData.accessToken.split('Bearer ')[1]
+
+			document.cookie = `accessToken=${token}; path=/; max-age=${20 * 60}`
+			localStorage.setItem('refreshToken', tokenData.refreshToken)
+
+			return {
+				accessToken: tokenData.accessToken,
+				refreshToken: tokenData.refreshToken,
+			}
+		} catch (error: any) {
+			return rejectWithValue(error.message)
+		}
+	}
+)
+
 const authSlice = createSlice({
 	name: 'auth',
 	initialState,
 	reducers: {
-		setForgotPasswordRequest: (state, action) => {
-			state.forgotPasswordRequest = action.payload
+		clearAuthError: state => {
+			state.error = null
 		},
-		setResetPasswordRequest: (state, action) => {
-			state.resetPasswordRequest = action.payload
+		setTokens: (state, action: PayloadAction<Tokens>) => {
+			const tokenWithoutBearer = action.payload.accessToken.split('Bearer ')[1]
+			setCookie('accessToken', tokenWithoutBearer, { expires: 20 * 60 })
+			localStorage.setItem('refreshToken', action.payload.refreshToken)
+			state.isAuth = true
 		},
 	},
 	extraReducers: builder => {
@@ -198,13 +230,10 @@ const authSlice = createSlice({
 				state.isLoading = false
 				state.error = action.payload as string
 			})
-			.addCase(logoutUser.pending, state => {
-				state.isLoading = true
-			})
 			.addCase(logoutUser.fulfilled, state => {
-				state.isLoading = false
 				state.user = null
 				state.isAuth = false
+				state.error = null
 			})
 			.addCase(checkUserAuth.pending, state => {
 				state.isLoading = true
@@ -213,9 +242,6 @@ const authSlice = createSlice({
 				state.isLoading = false
 				state.user = action.payload
 				state.isAuth = true
-			})
-			.addCase(checkUserAuth.rejected, state => {
-				state.isLoading = false
 			})
 			.addCase(fetchUser.fulfilled, (state, action) => {
 				state.user = action.payload
@@ -229,10 +255,16 @@ const authSlice = createSlice({
 			.addCase(confirmPasswordReset.fulfilled, state => {
 				state.resetPasswordRequest = true
 			})
+			.addCase(refreshTokens.fulfilled, state => {
+				state.isAuth = true
+			})
+			.addCase(refreshTokens.rejected, (state, action) => {
+				state.isAuth = false
+				state.error = action.payload as string
+			})
 	},
 })
 
+export const { clearAuthError, setTokens } = authSlice.actions
 export const selectIsAuth = (state: { auth: IAuthState }) => state.auth.isAuth
-export const { setForgotPasswordRequest, setResetPasswordRequest } =
-	authSlice.actions
 export default authSlice.reducer

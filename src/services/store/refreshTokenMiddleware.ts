@@ -1,47 +1,44 @@
-import { Middleware } from '@reduxjs/toolkit'
-import { refreshToken } from '../api/authApi'
-import { logoutUser } from '../slices/authSlice'
+import { Middleware, AnyAction } from '@reduxjs/toolkit'
+import { logoutUser, refreshTokens } from '../slices/authSlice'
 import { getCookie } from '../utils/cookies'
-import { AppDispatch, RootState } from '../types'
 
-export const refreshTokenMiddleware: Middleware<
-	Record<string, never>,
-	RootState,
-	AppDispatch
-> = store => next => async action => {
-	if (action.type.endsWith('/rejected')) {
-		const error = action.payload || action.error
-
-		if (error?.message?.includes('jwt expired')) {
-			try {
-				const refreshTokenValue = localStorage.getItem('refreshToken')
-				if (!refreshTokenValue) {
-					store.dispatch(logoutUser())
-					return next(action)
-				}
-
-				const tokenData = await refreshToken(refreshTokenValue)
-				const accessToken = tokenData.accessToken.split('Bearer ')[1]
-				document.cookie = `accessToken=${accessToken}; max-age=${
-					20 * 60
-				}; path=/`
-				localStorage.setItem('refreshToken', tokenData.refreshToken)
-
-				if (action.meta?.arg) {
-					const newAction = {
-						...action.meta.arg,
-						headers: {
-							...action.meta.arg.headers,
-							Authorization: `Bearer ${accessToken}`,
-						},
+export const createRefreshTokenMiddleware = (): Middleware => {
+	return store => next => async (action: AnyAction) => {
+		if (action.type.endsWith('/rejected')) {
+			const error = action.payload || action.error
+			if (
+				error?.message &&
+				(error.message.includes('jwt expired') ||
+					error.message.includes('jwt malformed'))
+			) {
+				try {
+					const refreshTokenValue = localStorage.getItem('refreshToken')
+					if (!refreshTokenValue) {
+						await store.dispatch(logoutUser() as unknown as AnyAction)
+						return next(action)
 					}
-					return store.dispatch(newAction)
+
+					const result = await store.dispatch(
+						refreshTokens() as unknown as AnyAction
+					)
+
+					if (refreshTokens.fulfilled.match(result)) {
+						const originalAction = action.meta?.arg
+						if (originalAction) {
+							return store.dispatch({
+								...originalAction,
+								headers: {
+									...originalAction.headers,
+									Authorization: `Bearer ${getCookie('accessToken')}`,
+								},
+							} as AnyAction)
+						}
+					}
+				} catch (error) {
+					await store.dispatch(logoutUser() as unknown as AnyAction)
 				}
-			} catch (error) {
-				store.dispatch(logoutUser())
 			}
 		}
+		return next(action)
 	}
-
-	return next(action)
 }

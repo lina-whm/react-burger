@@ -13,6 +13,7 @@ import {
 	moveIngredient,
 } from '../../services/slices/constructorSlice'
 import { createOrder } from '../../services/slices/orderSlice'
+import { refreshTokens } from '../../services/slices/authSlice'
 import DraggableIngredient from './draggable-ingredient'
 import Modal from '../modal/modal'
 import OrderDetails from '../order-details/order-details'
@@ -49,17 +50,44 @@ const BurgerConstructor: React.FC = () => {
 		try {
 			const ingredientIds = [
 				bun._id,
-				...ingredients.map(item => item?._id).filter(id => id != null),
+				...ingredients.map(item => item._id),
 				bun._id,
-			].filter(Boolean)
+			]
 
-			await dispatch(createOrder(ingredientIds)).unwrap()
-			setIsOrderModalOpen(true)
-			dispatch(clearConstructor())
+			let resultAction = await dispatch(createOrder(ingredientIds))
+
+			if (
+				createOrder.rejected.match(resultAction) &&
+				resultAction.error?.message?.includes('jwt expired')
+			) {
+				try {
+					await dispatch(refreshTokens()).unwrap()
+					resultAction = await dispatch(createOrder(ingredientIds))
+				} catch (refreshError) {
+					navigate('/login', { state: { from: '/' } })
+					return
+				}
+			}
+
+			if (createOrder.fulfilled.match(resultAction)) {
+				setIsOrderModalOpen(true)
+				dispatch(clearConstructor())
+			} else if (createOrder.rejected.match(resultAction)) {
+				throw new Error(
+					resultAction.error?.message || 'Ошибка оформления заказа'
+				)
+			}
 		} catch (error) {
 			console.error('Ошибка оформления заказа:', error)
+			if (
+				error.message.includes('jwt expired') ||
+				error.message.includes('invalid token')
+			) {
+				navigate('/login', { state: { from: '/' } })
+			}
 		}
 	}
+
 	const moveCard = (dragIndex: number, hoverIndex: number) => {
 		if (dragIndex === hoverIndex) return
 		dispatch(moveIngredient({ dragIndex, hoverIndex }))

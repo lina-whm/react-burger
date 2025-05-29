@@ -1,0 +1,85 @@
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.number {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.done {
+  color: #00CCCC;
+}
+
+.ingredients {
+  max-height: 312px;
+  overflow-y: auto;
+  padding-right: 24px;
+  margin: 24px 0 40px;
+  scrollbar-width: thin;
+  scrollbar-color: #8585ad #2f2f37;
+}
+
+.ingredients::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ingredients::-webkit-scrollbar-track {
+  background: #2f2f37;
+}
+
+.ingredients::-webkit-scrollbar-thumb {
+  background-color: #8585ad;
+  border: 3px solid #2f2f37;
+  border-radius: 6px;
+}
+
+.ingredient {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.imageContainer {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid #801AB2;
+  background: #131316;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.image {
+  height: 56px;
+  object-fit: cover;
+}
+
+.name {
+  flex-grow: 1;
+  margin: 0 16px;
+}
+
+.price {
+  display: flex;
+  align-items: center;
+  min-width: 100px;
+  justify-content: flex-end;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

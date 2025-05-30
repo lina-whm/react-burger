@@ -40,5 +40,14 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
   <div id="modals"></div>
+  <script>
+    (function(){
+      var redirect = sessionStorage.redirect;
+      delete sessionStorage.redirect;
+      if (redirect && redirect != location.pathname) {
+        history.replaceState(null, null, redirect);
+      }
+    })();
+  </script>
   </body>
 </html>

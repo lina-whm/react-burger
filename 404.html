@@ -4,11 +4,11 @@
     <meta charset="utf-8">
     <title>Redirecting...</title>
     <script>
-      const baseUrl = '/react-burger';
-      window.location.replace(baseUrl + '/');
+      sessionStorage.redirect = location.pathname;
     </script>
+    <meta http-equiv="refresh" content="0;URL='/react-burger'">
   </head>
   <body>
-    <p>Если перенаправление не сработало, <a href="/react-burger/">нажмите сюда</a>.</p>
+    Redirecting...
   </body>
 </html>

@@ -30,4 +30,3 @@ npm run build
 
 # Запуск тестов
 npm test        # Unit-тесты (Jest)
-npx cypress open # E2E-тесты (Cypress)

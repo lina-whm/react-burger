@@ -26,8 +26,8 @@
 
 1. Клонируй репозиторий:
    ```bash
-   git clone <ссылка_на_репозиторий>
-   cd stellar-burgers
+   git clone https://github.com/lina-whm/react-burger.git
+   cd react-burger
    ```
 
 2. Установи зависимости:

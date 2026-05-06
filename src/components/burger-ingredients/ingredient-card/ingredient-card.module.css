@@ -25,6 +25,79 @@
   z-index: 1;
 }
 
+.addButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #4c4cff;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.2s;
+  z-index: 2;
+}
+
+.addButton:hover {
+  background: #6c6cff;
+  transform: scale(1.1);
+}
+
+.addButton:active {
+  transform: scale(0.95);
+}
+
+.removeButton {
+  position: absolute;
+  top: 8px;
+  right: 48px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #ff0000;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.2s;
+  z-index: 2;
+}
+
+.removeButton:hover {
+  background: #cc0000;
+  transform: scale(1.1);
+}
+
+.removeButton:active {
+  transform: scale(0.95);
+}
+
+/* Показываем только на мобильном и планшете */
+@media (min-width: 901px) {
+  .addButton {
+    display: none;
+  }
+  .removeButton {
+    display: none;
+  }
+}
+
+.image {
+  width: 100%;
+  height: 240px;
+  object-fit: contain;
+}
 
 .price {
   display: flex;
@@ -46,4 +119,31 @@
   overflow: hidden;
   text-overflow: ellipsis;
   line-clamp: 2;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .card {
+    padding: 12px;
+    min-height: 150px;
+  }
+  
+  .image {
+    height: 150px;
+  }
+  
+  .price {
+    font-size: 16px;
+    margin: 4px 0;
+  }
+  
+  .name {
+    font-size: 14px;
+  }
+  
+  .count {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
 }

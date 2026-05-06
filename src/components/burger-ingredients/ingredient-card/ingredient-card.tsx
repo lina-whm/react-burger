@@ -8,11 +8,17 @@ import { Ingredient } from '../../utils/types'
 interface IngredientCardProps {
 	ingredient: Ingredient
 	onIngredientClick: (ingredient: Ingredient) => void
+	onAddClick?: () => void
+	onRemoveClick?: () => void
+	count?: number
 }
 
 const IngredientCard: React.FC<IngredientCardProps> = ({
 	ingredient,
 	onIngredientClick,
+	onAddClick,
+	onRemoveClick,
+	count: externalCount,
 }) => {
 	const { ingredients = [], bun } = useAppSelector(
 		state => state.burgerConstructor
@@ -26,12 +32,25 @@ const IngredientCard: React.FC<IngredientCardProps> = ({
 		}),
 	}))
 
-	const count = React.useMemo(() => {
+	const internalCount = React.useMemo(() => {
 		if (ingredient.type === 'bun') {
 			return bun?._id === ingredient._id ? 2 : 0
 		}
 		return ingredients.filter(item => item._id === ingredient._id).length
 	}, [ingredient, bun, ingredients])
+
+	const count = externalCount !== undefined ? externalCount : internalCount
+	const isAdded = count > 0
+
+	const handleAddClick = (e: React.MouseEvent) => {
+		e.stopPropagation()
+		onAddClick?.()
+	}
+
+	const handleRemoveClick = (e: React.MouseEvent) => {
+		e.stopPropagation()
+		onRemoveClick?.()
+	}
 
 	return (
 		<div
@@ -56,6 +75,24 @@ const IngredientCard: React.FC<IngredientCardProps> = ({
 			<p className={`text text_type_main-default ${styles.name}`}>
 				{ingredient.name}
 			</p>
+			{onRemoveClick && count > 0 && (
+				<button
+					className={styles.removeButton}
+					onClick={handleRemoveClick}
+					aria-label='Убрать из бургера'
+				>
+					-
+				</button>
+			)}
+			{onAddClick && (
+				<button
+					className={styles.addButton}
+					onClick={handleAddClick}
+					aria-label='Добавить в бургер'
+				>
+					+
+				</button>
+			)}
 		</div>
 	)
 }

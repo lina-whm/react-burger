@@ -4,6 +4,7 @@ import IngredientCard from './ingredient-card/ingredient-card'
 import styles from './burger-ingredients.module.css'
 import { useAppSelector, useAppDispatch } from '../../services/hooks'
 import { fetchIngredients } from '../../services/slices/ingredientsSlice'
+import { addIngredient, removeIngredient } from '../../services/slices/constructorSlice'
 import { Ingredient } from '../../services/types'
 
 interface BurgerIngredientsProps {
@@ -19,46 +20,38 @@ const BurgerIngredients: React.FC<BurgerIngredientsProps> = ({
 		loading,
 		error,
 	} = useAppSelector(state => state.ingredients)
+	const { ingredients: constructorIngredients, bun: constructorBun } =
+		useAppSelector(state => state.burgerConstructor)
 	const [currentTab, setCurrentTab] = useState<'bun' | 'sauce' | 'main'>('bun')
 
 	const bunRef = useRef<HTMLDivElement>(null)
 	const sauceRef = useRef<HTMLDivElement>(null)
 	const mainRef = useRef<HTMLDivElement>(null)
 
-	useEffect(() => {
+useEffect(() => {
 		dispatch(fetchIngredients())
 	}, [dispatch])
 
-	useEffect(() => {
-		const observer = new IntersectionObserver(
-			entries => {
-				entries.forEach(entry => {
-					if (entry.isIntersecting) {
-						switch (entry.target.id) {
-							case 'buns':
-								setCurrentTab('bun')
-								break
-							case 'sauces':
-								setCurrentTab('sauce')
-								break
-							case 'mains':
-								setCurrentTab('main')
-								break
-							default:
-								break
-						}
-					}
-				})
-			},
-			{ threshold: 0.5 }
+	const handleAddIngredient = (ingredient: Ingredient) => {
+		if (ingredient.type === 'bun') {
+			if (constructorBun?._id === ingredient._id) {
+				return
+			}
+		}
+		dispatch(addIngredient(ingredient))
+	}
+
+	const handleRemoveIngredient = (ingredient: Ingredient) => {
+		if (ingredient.type === 'bun') {
+			return
+		}
+		const items = constructorIngredients.filter(
+			item => item._id === ingredient._id
 		)
-
-		if (bunRef.current) observer.observe(bunRef.current)
-		if (sauceRef.current) observer.observe(sauceRef.current)
-		if (mainRef.current) observer.observe(mainRef.current)
-
-		return () => observer.disconnect()
-	}, [])
+		if (items.length > 0) {
+			dispatch(removeIngredient(items[0].uniqueId))
+		}
+	}
 
 	const handleTabClick = (tab: 'bun' | 'sauce' | 'main') => {
 		setCurrentTab(tab)
@@ -122,6 +115,10 @@ const BurgerIngredients: React.FC<BurgerIngredientsProps> = ({
 								key={ingredient._id}
 								ingredient={ingredient}
 								onIngredientClick={onIngredientClick}
+								onAddClick={() => handleAddIngredient(ingredient)}
+								count={
+									constructorBun?._id === ingredient._id ? 2 : 0
+								}
 							/>
 						))}
 					</div>
@@ -135,6 +132,15 @@ const BurgerIngredients: React.FC<BurgerIngredientsProps> = ({
 								key={ingredient._id}
 								ingredient={ingredient}
 								onIngredientClick={onIngredientClick}
+								onAddClick={() => handleAddIngredient(ingredient)}
+								onRemoveClick={() =>
+									handleRemoveIngredient(ingredient)
+								}
+								count={
+									constructorIngredients.filter(
+										item => item._id === ingredient._id
+									).length
+								}
 							/>
 						))}
 					</div>
@@ -148,6 +154,15 @@ const BurgerIngredients: React.FC<BurgerIngredientsProps> = ({
 								key={ingredient._id}
 								ingredient={ingredient}
 								onIngredientClick={onIngredientClick}
+								onAddClick={() => handleAddIngredient(ingredient)}
+								onRemoveClick={() =>
+									handleRemoveIngredient(ingredient)
+								}
+								count={
+									constructorIngredients.filter(
+										item => item._id === ingredient._id
+									).length
+								}
 							/>
 						))}
 					</div>

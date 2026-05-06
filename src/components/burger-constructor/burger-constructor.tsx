@@ -131,10 +131,7 @@ const BurgerConstructor: React.FC = () => {
 			</div>
 
 			{/* Список ингредиентов */}
-			<div
-				className={styles.ingredientsList}
-				style={{ maxHeight: ingredients.length > 4 ? '464px' : 'auto' }}
-			>
+			<div className={styles.ingredientsList}>
 				{ingredients
 					.filter(ing => ing && ing._id)
 					.map((item, index) => (
@@ -181,10 +178,6 @@ const BurgerConstructor: React.FC = () => {
 
 			{/* Итого */}
 			<div className={styles.total}>
-				<div className={styles.totalPrice}>
-					<span className='text text_type_digits-medium'>{totalPrice}</span>
-					<CurrencyIcon type='primary' />
-				</div>
 				<Button
 					htmlType='button'
 					type='primary'
@@ -194,6 +187,10 @@ const BurgerConstructor: React.FC = () => {
 				>
 					{loading ? 'Оформляем...' : 'Оформить заказ'}
 				</Button>
+				<div className={styles.totalPrice}>
+					<span className='text text_type_digits-medium'>{totalPrice}</span>
+					<CurrencyIcon type='primary' />
+				</div>
 			</div>
 
 			{isOrderModalOpen && orderNumber && (

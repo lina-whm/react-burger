@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
+import { TouchBackend } from 'react-dnd-touch-backend'
 import {
 	Routes,
 	Route,
@@ -8,10 +9,8 @@ import {
 	Navigate,
 	useNavigate,
 } from 'react-router-dom'
-import { useAppSelector } from './services/hooks'
 import Modal from './components/modal/modal'
 import IngredientDetails from './components/ingredient-details/ingredient-details'
-import OrderDetails from './components/order-details/order-details'
 import AppHeader from './components/app-header/app-header'
 import BurgerIngredients from './components/burger-ingredients/burger-ingredients'
 import BurgerConstructor from './components/burger-constructor/burger-constructor'
@@ -35,11 +34,15 @@ import { Ingredient } from './services/types'
 function App() {
 	const location = useLocation()
 	const navigate = useNavigate()
-	const { items: ingredients } = useAppSelector(state => state.ingredients)
 	const [selectedIngredient, setSelectedIngredient] =
 		useState<Ingredient | null>(null)
 	const [isModalOpened, setIsModalOpened] = useState(false)
 	const background = location.state?.background
+	const [isTouchDevice, setIsTouchDevice] = useState(false)
+
+	useEffect(() => {
+		setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0)
+	}, [])
 
 	const handleOpenIngredientModal = (ingredient: Ingredient) => {
 		setSelectedIngredient(ingredient)
@@ -49,22 +52,13 @@ function App() {
 		setIsModalOpened(true)
 	}
 
-	const handleOpenOrderModal = (orderNumber: number, isProfile: boolean) => {
-		navigate(
-			isProfile ? `/profile/orders/${orderNumber}` : `/feed/${orderNumber}`,
-			{
-				state: { background: location },
-			}
-		)
-	}
-
 	const handleCloseModal = () => {
 		navigate(-1)
 		setIsModalOpened(false)
 	}
 
 	return (
-		<DndProvider backend={HTML5Backend}>
+		<DndProvider backend={isTouchDevice ? TouchBackend : HTML5Backend} options={{ enableMouseEvents: true }}>
 			<div className={styles.App}>
 				<AppHeader />
 

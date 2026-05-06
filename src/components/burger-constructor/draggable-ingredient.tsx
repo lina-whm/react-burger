@@ -1,9 +1,6 @@
 import React, { useRef } from 'react'
 import { useDrag, useDrop } from 'react-dnd'
-import {
-	ConstructorElement,
-	DragIcon,
-} from '@ya.praktikum/react-developer-burger-ui-components'
+import { DragIcon, ConstructorElement } from '@ya.praktikum/react-developer-burger-ui-components'
 import { useAppDispatch } from '../../services/hooks'
 import { removeIngredient } from '../../services/slices/constructorSlice'
 import styles from './draggable-ingredient.module.css'
@@ -54,18 +51,29 @@ const DraggableIngredient: React.FC<DraggableIngredientProps> = ({
 
 	drag(drop(ref))
 
+	const handleRemove = () => {
+		dispatch(removeIngredient(ingredient.uniqueId))
+	}
+
 	return (
 		<div
 			ref={ref}
 			className={styles.draggableItem}
 			style={{ opacity: isDragging ? 0.5 : 1 }}
 		>
-			<DragIcon type='primary' />
+			<span className={styles.dragHandle}>
+				<span />
+				<span />
+				<span />
+			</span>
+			<span className={styles.dragIcon}>
+				<DragIcon type='primary' />
+			</span>
 			<ConstructorElement
 				text={ingredient.name}
 				price={ingredient.price}
 				thumbnail={ingredient.image}
-				handleClose={() => dispatch(removeIngredient(ingredient.uniqueId))}
+				handleClose={handleRemove}
 			/>
 		</div>
 	)

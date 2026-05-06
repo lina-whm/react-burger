@@ -19,6 +19,11 @@
   text-decoration: none;
 }
 
+.content {
+  flex-grow: 1;
+  width: 100%;
+}
+
 .ordersList {
   display: flex;
   flex-direction: column;

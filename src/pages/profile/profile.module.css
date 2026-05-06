@@ -82,11 +82,11 @@
   
   .sidebar {
     width: 100%;
-    order: 1;
+    order: -1;
   }
-  
+
   .content {
-    order: 2;
+    order: 1;
   }
   
   .nav {

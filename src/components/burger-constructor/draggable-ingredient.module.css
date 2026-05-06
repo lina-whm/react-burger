@@ -86,11 +86,23 @@
     display: none;
   }
 
+  .removeButton {
+    display: none !important;
+  }
+
+  /* Скрываем иконку удаления внутри ConstructorElement */
+  .draggableItem :global(.constructor-element__close) {
+    display: none !important;
+  }
+
   .draggableItem {
-    padding: 4px;
+    padding: 0;
     border-radius: 16px;
     gap: 4px;
     width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+    box-sizing: border-box;
   }
 }
 

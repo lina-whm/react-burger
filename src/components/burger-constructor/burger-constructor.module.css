@@ -133,7 +133,7 @@
   
   .ingredientsList {
     gap: 6px;
-    padding: 0 4px;
+    padding: 0;
     width: 100%;
     align-items: center;
   }

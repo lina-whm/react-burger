@@ -149,20 +149,20 @@
   }
   
   .totalNumber {
-    font-size: 20px;
+    font-size: 30px;
     text-shadow: 0 0 6px #b388ff, 0 0 12px #7c4dff;
   }
-  
+
   .totalTodayNumber {
-    font-size: 20px;
+    font-size: 30px;
     text-shadow: 0 0 6px #b388ff, 0 0 12px #7c4dff;
   }
-  
+
   .doneList span {
-    font-size: 16px;
+    font-size: 30px;
   }
-  
+
   .pendingList span {
-    font-size: 16px;
+    font-size: 30px;
   }
 }

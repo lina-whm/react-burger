@@ -14,13 +14,13 @@ const OrderDetailsFull: React.FC = () => {
 
 	if (!order) return null
 
-	const orderIngredients = order.ingredients
+	const orderIngredientsList = order.ingredients
 		.map(id => ingredients.find(ing => ing._id === id))
 		.filter(Boolean)
 
-	const uniqueIngredients = Array.from(new Set(orderIngredients))
+	const uniqueIngredients = Array.from(new Set(orderIngredientsList))
 
-	const totalPrice = orderIngredients.reduce(
+	const totalPrice = orderIngredientsList.reduce(
 		(sum, ing) => sum + (ing?.price || 0),
 		0
 	)
@@ -34,7 +34,7 @@ const OrderDetailsFull: React.FC = () => {
 
 	return (
 		<div className={styles.container}>
-			<p className={`${styles.number} text text_type_digits-default`}>
+			<p className={`${styles.number} text text_type_digits-large`}>
 				#{order.number}
 			</p>
 			<h1 className='text text_type_main-medium mt-10'>{order.name}</h1>
@@ -47,23 +47,27 @@ const OrderDetailsFull: React.FC = () => {
 			</p>
 			<h2 className='text text_type_main-medium mt-15'>Состав:</h2>
 			<div className={`${styles.ingredients} mt-6`}>
-				{uniqueIngredients.map(ing => (
-					<div key={ing?._id} className={styles.ingredient}>
-						<div className={styles.imageContainer}>
-							<img src={ing?.image} alt={ing?.name} className={styles.image} />
+				{uniqueIngredients.map(ing => {
+					const count = orderIngredientsList.filter(i => i?._id === ing?._id).length
+					return (
+						<div key={ing?._id} className={styles.ingredient}>
+							<div className={styles.ingredientInfo}>
+								<div className={styles.imageContainer}>
+									<img src={ing?.image} alt={ing?.name} className={styles.image} />
+								</div>
+								<p className={`${styles.name} text text_type_main-default`}>
+									{ing?.name}
+								</p>
+							</div>
+							<div className={styles.priceInfo}>
+								<span className='text text_type_digits-default'>
+									{count} x {ing?.price}
+								</span>
+								<CurrencyIcon type='primary' />
+							</div>
 						</div>
-						<p className={`${styles.name} text text_type_main-default`}>
-							{ing?.name}
-						</p>
-						<div className={styles.price}>
-							<span className='text text_type_digits-default mr-2'>
-								{orderIngredients.filter(i => i?._id === ing?._id).length} x{' '}
-								{ing?.price}
-							</span>
-							<CurrencyIcon type='primary' />
-						</div>
-					</div>
-				))}
+					)
+				})}
 			</div>
 			<div className={`${styles.footer} mt-10`}>
 				<p className='text text_type_main-default text_color_inactive'>

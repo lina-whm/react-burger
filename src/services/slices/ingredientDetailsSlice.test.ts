@@ -2,14 +2,14 @@ import ingredientDetailsSlice, {
 	setIngredientDetails,
 	clearIngredientDetails,
 } from './ingredientDetailsSlice'
-import { Ingredient } from '../../components/utils/types'
+import { Ingredient, IngredientType } from '../../components/utils/types'
 
 const initialState = ingredientDetailsSlice(undefined, { type: '' })
 
 const mockIngredient: Ingredient = {
 	_id: '1',
 	name: 'Булка',
-	type: 'bun',
+	type: 'bun' as IngredientType,
 	price: 100,
 	image: 'image',
 	calories: 300,
@@ -36,7 +36,7 @@ describe('ingredientDetailsSlice', () => {
 	it('should clear ingredient details', () => {
 		const stateWithIngredient = { ...initialState, ingredient: mockIngredient }
 		const state = ingredientDetailsSlice(
-			stateWithIngredient,
+			stateWithIngredient as any,
 			clearIngredientDetails()
 		)
 		expect(state.ingredient).toBeNull()

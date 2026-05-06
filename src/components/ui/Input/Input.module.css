@@ -16,6 +16,7 @@
   color: #8585AD;
   outline: none;
   transition: all 0.3s ease;
+  box-sizing: border-box;
 }
 
 .input:focus {

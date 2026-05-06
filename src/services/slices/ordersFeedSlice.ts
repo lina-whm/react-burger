@@ -93,6 +93,11 @@ export const ordersFeedSlice = createSlice({
 			state.totalToday = action.payload.totalToday
 			state.error = undefined
 		},
+		addOrderToFeed: (state, action: PayloadAction<Order>) => {
+			state.orders.unshift(action.payload)
+			state.total += 1
+			state.totalToday += 1
+		},
 	},
 	extraReducers: builder => {
 		builder
@@ -118,6 +123,12 @@ export const ordersFeedSlice = createSlice({
 				state.error = action.payload as string
 				console.error('Failed to fetch order:', action.payload)
 			})
+			.addCase(addOrderToFeed, (state, action) => {
+				// Добавляем новый заказ в начало списка
+				state.orders.unshift(action.payload)
+				state.total += 1
+				state.totalToday += 1
+			})
 	},
 })
 
@@ -127,6 +138,7 @@ export const {
 	wsConnectionError,
 	wsConnectionClosed,
 	wsGetOrders,
+	addOrderToFeed,
 } = ordersFeedSlice.actions
 
 export const selectOrdersFeed = (state: { ordersFeed: OrdersFeedState }) =>

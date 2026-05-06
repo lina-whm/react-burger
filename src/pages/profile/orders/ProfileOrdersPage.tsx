@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../services/hooks'
 import {
 	wsConnectionStart,
@@ -22,7 +23,7 @@ const ProfileOrdersPage: React.FC = () => {
 			if (accessToken) {
 				dispatch(
 					wsConnectionStart({
-						url: 'wss://norma.nomoreparties.space/orders',
+						url: 'wss://stellarburgers.education-services.ru/orders',
 						withToken: true,
 					})
 				)
@@ -68,6 +69,10 @@ const ProfileOrdersPage: React.FC = () => {
 
 	return (
 		<div className={styles.container}>
+			<Link to='/profile' className={styles.backButton}>
+				<span className='text text_type_main-default'>← Назад к профилю</span>
+			</Link>
+
 			<div className={styles.ordersList}>
 				{orders.length > 0 ? (
 					orders

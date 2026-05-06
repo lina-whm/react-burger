@@ -2,12 +2,12 @@ import ingredientsReducer, { fetchIngredients } from './ingredientsSlice'
 import { Ingredient } from '../../components/utils/types'
 
 const initialState = {
-	items: [] as Ingredient[],
+	items: [],
 	loading: false,
-	error: null as string | null,
+	error: null,
 }
 
-const mockIngredients: Ingredient[] = [
+const mockIngredients = [
 	{
 		_id: '1',
 		name: 'Булка',

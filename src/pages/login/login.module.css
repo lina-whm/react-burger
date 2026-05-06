@@ -2,11 +2,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   padding-top: 50px;
+  min-height: calc(100vh - 180px);
 }
 
 .title {
   margin-bottom: 24px;
+  text-align: center;
 }
 
 .form {
@@ -17,20 +20,21 @@
   max-width: 480px;
 }
 
-.button {
+.input {
   width: 100%;
-  height: 56px;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  border-radius: 40px;
-  transition: all 0.3s ease;
+  box-sizing: border-box;
 }
 
-.button:hover {
-  box-shadow: 0px 0px 16px rgba(51, 51, 255, 0.25), 
-              0px 0px 8px rgba(51, 51, 255, 0.25), 
-              0px 4px 32px rgba(51, 51, 255, 0.5);
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  min-width: 200px;
+  height: 56px;
+  border-radius: 40px;
+  box-sizing: border-box;
+  box-shadow: none;
 }
 
 .link {
@@ -45,4 +49,46 @@
 
 .linkText:hover {
   opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding-top: 30px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  .title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .form {
+    max-width: 100%;
+  }
+  
+  .button {
+    width: 70%;
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding-top: 20px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 40px;
+  }
+  
+  .title {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+  
+  .button {
+    width: 80%;
+    min-width: 140px;
+    height: 48px;
+  }
 }

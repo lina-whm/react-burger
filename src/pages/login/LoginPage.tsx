@@ -27,7 +27,7 @@ const LoginPage = () => {
 			</h1>
 
 			<form className={styles.form} onSubmit={handleSubmit}>
-				<div className='mb-6'>
+				<div className={`${styles.input} mb-6`}>
 					<Input
 						type='email'
 						placeholder='E-mail'
@@ -37,7 +37,7 @@ const LoginPage = () => {
 					/>
 				</div>
 
-				<div className='mb-6'>
+				<div className={`${styles.input} mb-6`}>
 					<Input
 						type='password'
 						placeholder='Пароль'
@@ -53,7 +53,16 @@ const LoginPage = () => {
 						type='primary'
 						size='medium'
 						htmlType='submit'
-						style={{ width: '100%' }}
+						style={{
+							borderRadius: 40,
+							boxShadow: 'none',
+							outline: 'none',
+							width: '100%',
+							minWidth: 200,
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center'
+						}}
 					>
 						Войти
 					</Button>

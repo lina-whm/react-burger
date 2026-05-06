@@ -1,5 +1,5 @@
 import { getCookie } from '../../services/utils/cookies'
-const API_BASE = 'https://norma.nomoreparties.space/api'
+const API_BASE = 'https://stellarburgers.education-services.ru/api'
 
 export function checkResponse<T>(res: Response): Promise<T> {
 	if (!res.ok) {

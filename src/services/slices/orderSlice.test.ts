@@ -1,4 +1,5 @@
 import orderReducer, { createOrder, clearOrder } from './orderSlice'
+import { Order } from '../types'
 
 const initialState = orderReducer(undefined, { type: '' })
 
@@ -17,14 +18,23 @@ describe('orderSlice', () => {
 	})
 
 	it('should handle createOrder.fulfilled', () => {
-		const orderNumber = 12345
+		const order: Order = {
+			_id: 'order-1',
+			ingredients: ['ing1', 'ing2'],
+			status: 'done',
+			name: 'Test Burger',
+			number: 12345,
+			createdAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString(),
+		}
 		const state = orderReducer(
 			initialState,
-			createOrder.fulfilled(orderNumber, '', [])
+			createOrder.fulfilled(order, '', [])
 		)
 		expect(state).toEqual({
 			...initialState,
-			orderNumber,
+			orderNumber: 12345,
+			createdOrder: order,
 			loading: false,
 		})
 	})

@@ -13,6 +13,7 @@ import {
 	moveIngredient,
 } from '../../services/slices/constructorSlice'
 import { createOrder } from '../../services/slices/orderSlice'
+import { addOrderToFeed } from '../../services/slices/ordersFeedSlice'
 import { refreshTokens } from '../../services/slices/authSlice'
 import DraggableIngredient from './draggable-ingredient'
 import Modal from '../modal/modal'
@@ -72,6 +73,12 @@ const BurgerConstructor: React.FC = () => {
 			if (createOrder.fulfilled.match(resultAction)) {
 				setIsOrderModalOpen(true)
 				dispatch(clearConstructor())
+				
+				// Добавляем заказ в ленту
+				const payload = resultAction.payload as any
+				if (payload && payload._id) {
+					dispatch(addOrderToFeed(payload))
+				}
 			} else if (createOrder.rejected.match(resultAction)) {
 				throw new Error(
 					resultAction.error?.message || 'Ошибка оформления заказа'

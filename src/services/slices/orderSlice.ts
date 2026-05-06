@@ -1,16 +1,19 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { request } from '../../components/utils/api'
+import { Order } from '../types'
 
 interface OrderState {
 	orderNumber: number | null
 	loading: boolean
 	error: string | null
+	createdOrder: Order | null
 }
 
 const initialState: OrderState = {
 	orderNumber: null,
 	loading: false,
 	error: null,
+	createdOrder: null,
 }
 
 export const createOrder = createAsyncThunk(
@@ -25,7 +28,20 @@ export const createOrder = createAsyncThunk(
 				method: 'POST',
 				body: JSON.stringify({ ingredients }),
 			})
-			return response.order.number
+			const orderNumber = response.order.number
+			
+			// Создаём объект заказа для ленты
+			const order: Order = {
+				_id: `order-${Date.now()}`,
+				ingredients: ingredients,
+				status: 'done',
+				name: response.name,
+				number: orderNumber,
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+			}
+			
+			return order
 		} catch (error: any) {
 			return rejectWithValue(error.message || 'Failed to create order')
 		}
@@ -49,7 +65,8 @@ const orderSlice = createSlice({
 			})
 			.addCase(createOrder.fulfilled, (state, action) => {
 				state.loading = false
-				state.orderNumber = action.payload
+				state.orderNumber = action.payload.number
+				state.createdOrder = action.payload
 			})
 			.addCase(createOrder.rejected, (state, action) => {
 				state.loading = false

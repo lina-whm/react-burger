@@ -1,18 +1,15 @@
 .container {
   max-width: 640px;
-  margin: 120px auto 0;
+  margin: 60px auto 0;
   text-align: center;
 }
 
 .number {
+  font-size: 48px;
   text-shadow: 0px 0px 16px rgba(51, 51, 255, 0.25), 
-               0px 0px 8px rgba(51, 51, 255, 0.25), 
-               0px 4px 32px rgba(51, 51, 255, 0.5);
+             0px 0px 8px rgba(51, 51, 255, 0.25), 
+             0px 4px 32px rgba(51, 51, 255, 0.5);
   margin-bottom: 40px;
-}
-
-.name {
-  margin-bottom: 12px;
 }
 
 .status {
@@ -46,7 +43,16 @@
 .ingredient {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 16px;
+  width: 100%;
+}
+
+.ingredientInfo {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 16px;
 }
 
 .imageContainer {
@@ -67,15 +73,16 @@
   object-fit: cover;
 }
 
-.ingredientName {
-  flex-grow: 1;
-  margin: 0 16px;
+.name {
   text-align: left;
+  margin: 0;
+  flex: 1;
 }
 
-.price {
+.priceInfo {
   display: flex;
   align-items: center;
+  gap: 8px;
   min-width: 100px;
   justify-content: flex-end;
 }
@@ -90,4 +97,50 @@
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .container {
+    margin: 40px auto 0;
+    padding: 0 16px;
+  }
+  
+  .number {
+    font-size: 32px;
+    margin-bottom: 24px;
+  }
+  
+  .ingredient {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .ingredientInfo {
+    width: 100%;
+    gap: 12px;
+  }
+  
+  .imageContainer {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .image {
+    height: 40px;
+  }
+  
+  .name {
+    font-size: 14px;
+  }
+  
+  .priceInfo {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .footer {
+    flex-direction: column;
+    gap: 16px;
+  }
 }

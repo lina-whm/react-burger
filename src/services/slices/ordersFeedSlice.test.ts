@@ -52,7 +52,7 @@ describe('ordersFeedSlice', () => {
 			totalToday: 1,
 			success: true,
 		}
-		const state = ordersFeedSlice(initialState, wsGetOrders(mockData))
+		const state = ordersFeedSlice(initialState, wsGetOrders(mockData as any))
 		expect(state.orders).toEqual([mockOrder])
 		expect(state.total).toBe(1)
 	})

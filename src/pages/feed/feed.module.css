@@ -1,9 +1,11 @@
 .container {
   max-width: 1240px;
-  margin: 40px auto 0;
+  margin: 0 auto;
+  padding: 40px 20px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 320px;
   gap: 60px;
+  align-items: flex-start;
 }
 
 .title {
@@ -12,7 +14,7 @@
 }
 
 .ordersList {
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - 250px);
   overflow-y: auto;
   padding-right: 8px;
   display: flex;
@@ -21,14 +23,14 @@
 }
 
 .statsContainer {
-  display: flex;
-  flex-direction: column;
+  position: sticky;
+  top: 40px;
 }
 
 .statusColumns {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 36px;
+  gap: 40px;
   margin-bottom: 60px;
 }
 
@@ -38,24 +40,129 @@
 }
 
 .doneList {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 8px;
+}
+
+.doneList span {
   color: #00CCCC;
+  font-size: 40px;
+}
+
+.doneColumns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.doneColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.doneColumn span {
+  color: #00CCCC;
+  font-size: 50px;
+}
+
+.pendingList span {
+  color: #F2F2F3;
+  font-size: 40px;
 }
 
 .pendingList {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 8px;
 }
 
+.pendingList span {
+  color: #F2F2F3;
+}
+
 .total {
-  margin-bottom: 60px;
+  margin-bottom: 24px;
 }
 
 .totalNumber {
-  text-shadow: 0px 0px 16px rgba(51, 51, 255, 0.25), 
-               0px 0px 8px rgba(51, 51, 255, 0.25), 
-               0px 4px 32px rgba(51, 51, 255, 0.5);
+  font-size: 144px;
+  color: #F2F2F3;
+  text-shadow: 0 0 10px #b388ff, 0 0 20px #7c4dff;
+}
+
+.totalTodayNumber {
+  font-size: 144px;
+  color: #F2F2F3;
+  text-shadow: 0 0 10px #b388ff, 0 0 20px #7c4dff;
+}
+
+/* Responsive - планшет */
+@media (max-width: 900px) {
+  .container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 24px 16px;
+  }
+  
+  .ordersList {
+    max-height: none;
+    overflow-y: visible;
+  }
+  
+  .statsContainer {
+    position: static;
+  }
+  
+  .statusColumns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  
+  .totalNumber {
+    font-size: 28px;
+  }
+  
+  .doneList span {
+    font-size: 20px;
+  }
+  
+  .pendingList span {
+    font-size: 20px;
+  }
+}
+
+/* Responsive - мобилка */
+@media (max-width: 600px) {
+  .container {
+    padding: 16px;
+    gap: 24px;
+  }
+  
+  .statusColumns {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  
+  .totalNumber {
+    font-size: 20px;
+    text-shadow: 0 0 6px #b388ff, 0 0 12px #7c4dff;
+  }
+  
+  .totalTodayNumber {
+    font-size: 20px;
+    text-shadow: 0 0 6px #b388ff, 0 0 12px #7c4dff;
+  }
+  
+  .doneList span {
+    font-size: 16px;
+  }
+  
+  .pendingList span {
+    font-size: 16px;
+  }
 }

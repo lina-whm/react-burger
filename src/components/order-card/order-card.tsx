@@ -53,12 +53,12 @@ const OrderCard: React.FC<OrderCardProps> = ({
 				<span className='text text_type_digits-default'>
 					#{order.number.toString().padStart(6, '0')}
 				</span>
-				<span className='text text_type_main-default text_color_inactive'>
+				<span className={`text text_type_main-default ${styles.date}`}>
 					{formatDate(order.createdAt)}
 				</span>
 			</div>
 
-			<h3 className={`${styles.title} text text_type_main-medium mt-6`}>
+			<h3 className={`${styles.title} text text_type_main-medium`}>
 				{order.name}
 			</h3>
 
@@ -73,39 +73,43 @@ const OrderCard: React.FC<OrderCardProps> = ({
 			)}
 
 			<div className={styles.footer}>
-				<div className={styles.ingredients}>
-					{visibleIngredients.map((ingredient, index) => (
-						<div
-							key={index}
-							className={styles.ingredient}
-							style={{
-								zIndex: maxIngredients - index,
-								left: `${index * 48}px`,
-							}}
-						>
-							<img
-								src={ingredient.image_mobile}
-								alt={ingredient.name}
-								className={styles.image}
-							/>
-						</div>
-					))}
-					{hiddenIngredientsCount > 0 && (
-						<div
-							className={styles.moreIngredients}
-							style={{
-								left: `${visibleIngredients.length * 48}px`,
-								zIndex: maxIngredients - visibleIngredients.length,
-							}}
-						>
-							<span
-								className={`${styles.moreText} text text_type_main-default`}
+				{orderIngredients.length > 0 ? (
+					<div className={styles.ingredients}>
+						{visibleIngredients.map((ingredient, index) => (
+							<div
+								key={index}
+								className={styles.ingredientImage}
+								style={{
+									zIndex: maxIngredients - index,
+									left: `${index * 48}px`,
+								}}
 							>
-								+{hiddenIngredientsCount}
-							</span>
-						</div>
-					)}
-				</div>
+								<img
+									src={ingredient.image_mobile}
+									alt={ingredient.name}
+									className={styles.ingredientImg}
+								/>
+							</div>
+						))}
+						{hiddenIngredientsCount > 0 && (
+							<div
+								className={styles.moreIngredients}
+								style={{
+									left: `${visibleIngredients.length * 48}px`,
+									zIndex: maxIngredients - visibleIngredients.length,
+								}}
+							>
+								<span className={`text text_type_main-default ${styles.moreText}`}>
+									+{hiddenIngredientsCount}
+								</span>
+							</div>
+						)}
+					</div>
+				) : (
+					<span className='text text_type_main-default text_color_inactive'>
+						{order.ingredients.length} ингредиентов
+					</span>
+				)}
 
 				<div className={styles.price}>
 					<span className='text text_type_digits-default mr-2'>

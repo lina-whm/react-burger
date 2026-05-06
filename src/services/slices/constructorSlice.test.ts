@@ -1,11 +1,10 @@
-import { v4 as uuidv4 } from 'uuid'
 import constructorSlice, {
 	addIngredient,
 	removeIngredient,
 	moveIngredient,
 	clearConstructor,
 } from './constructorSlice'
-import { IngredientType } from './../../components/utils/types'
+import { ConstructorIngredient, IngredientType } from '../../components/utils/types'
 
 jest.mock('uuid', () => ({
 	v4: jest.fn(() => 'mocked-unique-id'),
@@ -13,7 +12,7 @@ jest.mock('uuid', () => ({
 
 const initialState = constructorSlice(undefined, { type: '' })
 
-const mockBun = {
+const mockBun: ConstructorIngredient = {
 	_id: '1',
 	name: 'Булка',
 	type: 'bun' as IngredientType,
@@ -23,9 +22,10 @@ const mockBun = {
 	proteins: 10,
 	fat: 5,
 	carbohydrates: 50,
+	uniqueId: 'mocked-unique-id',
 }
 
-const mockIngredient = {
+const mockIngredient: ConstructorIngredient = {
 	_id: '2',
 	name: 'Котлета',
 	type: 'main' as IngredientType,
@@ -35,6 +35,7 @@ const mockIngredient = {
 	proteins: 5,
 	fat: 3,
 	carbohydrates: 30,
+	uniqueId: 'mocked-unique-id',
 }
 
 describe('constructorSlice', () => {
@@ -84,7 +85,7 @@ describe('constructorSlice', () => {
 			ingredients: [{ ...mockIngredient, uniqueId: 'test-id' }],
 		}
 		const state = constructorSlice(
-			stateWithIngredient,
+			stateWithIngredient as unknown as Parameters<typeof constructorSlice>[0],
 			removeIngredient('test-id')
 		)
 		expect(state.ingredients).toEqual([])
@@ -100,7 +101,7 @@ describe('constructorSlice', () => {
 			],
 		}
 		const state = constructorSlice(
-			stateWithIngredients,
+			stateWithIngredients as unknown as Parameters<typeof constructorSlice>[0],
 			moveIngredient({ dragIndex: 0, hoverIndex: 1 })
 		)
 		expect(state.ingredients[0]).toEqual(secondIngredient)
@@ -115,7 +116,10 @@ describe('constructorSlice', () => {
 			bun: { ...mockBun, uniqueId: 'test-id' },
 			ingredients: [{ ...mockIngredient, uniqueId: 'test-id' }],
 		}
-		const state = constructorSlice(stateWithItems, clearConstructor())
+		const state = constructorSlice(
+			stateWithItems as unknown as Parameters<typeof constructorSlice>[0],
+			clearConstructor()
+		)
 		expect(state).toEqual(initialState)
 	})
 })

@@ -48,6 +48,8 @@ const ProfilePage = () => {
 		}
 	}
 
+	const isProfilePage = location.pathname === '/profile'
+
 	return (
 		<div className={styles.container}>
 			<div className={styles.sidebar}>
@@ -55,7 +57,7 @@ const ProfilePage = () => {
 					<Link
 						to='/profile'
 						className={`${styles.link} text text_type_main-medium ${
-							location.pathname === '/profile' ? styles.active : ''
+							isProfilePage ? styles.active : ''
 						}`}
 					>
 						Профиль
@@ -75,17 +77,19 @@ const ProfilePage = () => {
 						Выход
 					</button>
 				</nav>
-				<p
-					className={`${styles.note} text text_type_main-default text_color_inactive`}
-				>
-					В этом разделе вы можете изменить свои персональные данные
-				</p>
+				{isProfilePage && (
+					<p
+						className={`${styles.note} text text_type_main-default text_color_inactive`}
+					>
+						В этом разделе вы можете изменить свои персональные данные
+					</p>
+				)}
 			</div>
 
 			<div className={styles.content}>
-				{location.pathname === '/profile' ? (
+				{isProfilePage ? (
 					<form className={styles.form}>
-						<div className='mb-6'>
+						<div className={`${styles.inputWrapper} mb-6`}>
 							<input
 								type='text'
 								name='name'
@@ -96,7 +100,7 @@ const ProfilePage = () => {
 								placeholder='Имя'
 							/>
 						</div>
-						<div className='mb-6'>
+						<div className={`${styles.inputWrapper} mb-6`}>
 							<input
 								type='email'
 								name='email'
@@ -107,7 +111,7 @@ const ProfilePage = () => {
 								placeholder='Логин'
 							/>
 						</div>
-						<div className='mb-6'>
+						<div className={`${styles.inputWrapper} mb-6`}>
 							<input
 								type='password'
 								name='password'
